@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class NotificationPage extends StatefulWidget {
    final int userId;
   final String userType;
   final String btsNumber;
   final String bloodGroup;
-
+  final String city;
+  final String address;
   NotificationPage({
     required this.userId,
     required this.userType,
     required this.btsNumber,
     required this.bloodGroup,
+    required this.city,
+    required this.address,
+    
   });
   @override
   _NotificationPageState createState() => _NotificationPageState();
@@ -20,6 +25,7 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   List<Map<String, dynamic>> _bloodAppeals = [];
+  bool  _isLoading = false;
 
   @override
   void initState() {
@@ -28,6 +34,10 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Future<void> _fetchBloodAppeals() async {
+    setState(() {
+      _isLoading = true;
+      
+    });
   try {
     final url = Uri.parse('https://elifesaver.online/includes/get_all_blood_appeals_for_user.inc.php');
     final response = await http.post(
@@ -35,8 +45,14 @@ class _NotificationPageState extends State<NotificationPage> {
       body: {
         'user_type': widget.userType,
         'blood_group': widget.bloodGroup,
+        'city':widget.city,
+        'address': widget.address,
       },
     );
+    setState(() {
+      _isLoading = true;
+      
+    });
      final jsonData = json.decode(response.body);
       final bool status = jsonData['success'];
       print(status);
@@ -97,33 +113,13 @@ class _NotificationPageState extends State<NotificationPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Notification banner
-            _bloodAppeals.isEmpty
-                ? Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFFFF3F3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Row(
-                      children: [
-                        Text(
-                          'No new notification',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.cancel,
-                          color: Colors.red,
-                        ),
-                      ],
-                    ),
-                  )
+              _bloodAppeals.isEmpty
+              ? SpinKitFadingCircle(
+        color: Colors.red, // Choose your desired color
+        size: 50.0, // Choose your desired size
+      )// Notification banner
+         
+                
                 : SizedBox.shrink(),
             SizedBox(height: 30),
             // List of blood appeals
@@ -148,12 +144,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       ),
                       child: Row(
                         children: [
-                          Text(
-                            'Blood group',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          
                           SizedBox(height: 8),
                           Expanded(
                             child: Text(
@@ -163,7 +154,7 @@ class _NotificationPageState extends State<NotificationPage> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 66),
+                          SizedBox(width: 46),
                           Expanded(
                             child: Text(
                               '${creationDate.day}/${creationDate.month}/${creationDate.year} ${creationDate.hour}:${creationDate.minute} status: $status',
@@ -180,7 +171,7 @@ class _NotificationPageState extends State<NotificationPage> {
               ),
             ),
             // Bottom row
-            Center(
+           /* Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -227,7 +218,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   ),
                 ],
               ),
-            ),
+            ),*/
           ],
         ),
       ),

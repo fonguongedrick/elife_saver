@@ -2,6 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+class HospitalLocation {
+  int facilityId;
+  int healthFacilityId;
+  String name;
+  String city;
+  String address;
+
+  HospitalLocation({
+    required this.facilityId,
+    required this.healthFacilityId,
+    required this.name,
+    required this.city,
+    required this.address,
+  });
+
+  factory HospitalLocation.fromJson(Map<String, dynamic> json) {
+    return HospitalLocation(
+      facilityId: json['facility_id'],
+      healthFacilityId: json['health_facility_id'],
+      name: json['name'],
+      city: json['city'],
+      address: json['address'],
+    );
+  }
+}
 
 class DonorAppealPage extends StatefulWidget {
   final int userId;
@@ -14,7 +41,7 @@ class DonorAppealPage extends StatefulWidget {
   final String btsNumber;
   final String email;
   final String bloodGroup;
-
+  final String gender;
   DonorAppealPage({
     required this.userId,
     required this.userName,
@@ -25,7 +52,8 @@ class DonorAppealPage extends StatefulWidget {
     required this.password,
     required this.btsNumber,
     required this.email,
-    required this.bloodGroup
+    required this.bloodGroup,
+    required this.gender,
   });
 
 
@@ -48,11 +76,11 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
       address: widget.address,
       password: widget.password,
       btsNumber: widget.btsNumber,
-      bloodGroup:widget.bloodGroup),
+      bloodGroup:widget.bloodGroup, gender:widget.gender),
       ),
     );
   }
-  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', 'None'];
   String selectedBloodGroup = 'A+';
   final List<String> rhFactors = ['Positive', 'Negative'];
   String selectedRhFactor = 'Positive';
@@ -62,9 +90,20 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
   int max(int a, int b) {
     return a > b ? a : b;
   }
+  bool _isLoading = false;
   final hospitalLocationController = TextEditingController();
   final medicalInformationController = TextEditingController();
-  
+  String selectedHospital = ''; // Define selectedHospital variable
+  List<String> facilityNames = [];
+  @override
+   void initState() {
+    super.initState();
+    fetchHospitalLocations().then((_) {
+      setState(() {
+        selectedHospital = facilityNames.isNotEmpty ? facilityNames[0] : '';
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -72,7 +111,37 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
     medicalInformationController.dispose();
     super.dispose();
   }
-
+    Future<void> fetchHospitalLocations() async {
+      setState(() {
+      _isLoading = true;
+      
+    });
+    try {
+      final response = await http.get(
+        Uri.parse('https://elifesaver.online/includes/get_all_heath_facilities.inc.php'),
+      );
+setState(() {
+      _isLoading = false;
+      
+    });
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+       print(jsonData);
+        if (jsonData['success'] == true) {
+          final List<dynamic> facilities = jsonData['health_facilities'];
+          setState(() {
+            facilityNames = facilities.map((facility) => facility['name'] as String).toList();
+          });
+        } else {
+          print('Error: ${jsonData['message']}');
+        }
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,8 +179,14 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(4.0),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
                     height: 40,
                     padding: EdgeInsets.all(8),
@@ -122,13 +197,18 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
                   SizedBox(width: 8,),
                   Container(
                     height: 40,
-                    padding: EdgeInsets.all(6),
+                    padding: EdgeInsets.only(left: 4, right:4),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(4.0),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         InkWell(
                           onTap: () {
@@ -138,7 +218,7 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
                           },
                           child: Text(
                             '-',
-                            style: TextStyle(fontSize: 16.0),
+                            style: TextStyle(fontSize: 30.0),
                           ),
                         ),
                         SizedBox(width: 16.0),
@@ -155,7 +235,7 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
                           },
                           child: Text(
                             '+',
-                            style: TextStyle(fontSize: 16.0),
+                            style: TextStyle(fontSize: 20.0),
                           ),
                         ),
                       ],
@@ -166,10 +246,17 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
               SizedBox(height: 16.0),
               Container(
                 height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+                padding: EdgeInsets.only(left: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -186,11 +273,17 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
                     SizedBox(height: 8),
                     Container(
                       height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
+                      padding: EdgeInsets.only(left: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
                       child: DropdownButton<String>(
                         value: selectedBloodGroup,
                         icon: Icon(Icons.arrow_drop_down),
@@ -214,83 +307,56 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
                 ),
               ),
               SizedBox(height: 16.0),
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        'Select Rh Factor',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                      child: DropdownButton<String>(
-                        value: selectedRhFactor,
-                        icon: Icon(Icons.arrow_drop_down),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: TextStyle(color: Colors.black),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedRhFactor = newValue!;
-                          });
-                        },
-                        items: rhFactors.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              
               SizedBox(height: 16.0),
               Container(
                 height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: TextField(
-                  controller: hospitalLocationController,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(12.0),
-                    hintText: 'Hospital Location',
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
+                padding: EdgeInsets.only(left: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ),
+                child:  _isLoading
+                    ? SpinKitFadingCircle(
+        color: Colors.black, // Choose your desired color
+        size: 30.0, // Choose your desired size
+      )
+                : DropdownButton<String>(
+        value: selectedHospital,
+        hint: Text(''),
+        onChanged: (String? value) {
+          setState(() {
+            selectedHospital = value!;
+          });
+        },
+        items: facilityNames.map((name) {
+          return DropdownMenuItem<String>(
+            value: name,
+            child: Text(name),
+          );
+        }).toList(),
+      ),
+    ),
               SizedBox(height: 16.0),
               Container(
                 height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+                padding: EdgeInsets.only(left: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
                 child: TextField(
                   controller: medicalInformationController,
                   maxLines: 3,
@@ -313,6 +379,32 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
                 ),
                 child: TextButton(
                   onPressed: () async {
+                    
+                     showDialog(
+                context: context,
+                barrierDismissible: false, // Prevent dialog dismissal on tap outside
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SpinKitCircle(
+                            color: Colors.red,
+                            size: 50.0,
+                          ),
+                          SizedBox(height: 16.0),
+                          Text(
+                            'making appeal...',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
   try {
     // Send the user's details to the server
     final response = await http.post(
@@ -324,7 +416,7 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
         'number_of_bags': numberOfBags.toString(),
         'blood_group': selectedBloodGroup,
         //'rhFactor': selectedRhFactor,
-        'health_facility': hospitalLocationController.text,
+        'health_facility': selectedHospital,
         'medical_info': medicalInformationController.text,
       },
     );
@@ -368,6 +460,7 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
         userId: widget.userId,
         userType: widget.userType,
         bloodGroup: widget.bloodGroup,
+         gender:widget.gender
       ),
     ),
     (route) => false, // Route predicate that removes all previous routes

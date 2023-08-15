@@ -78,7 +78,18 @@ class _ProfilePageState extends State<ProfilePage> {
     // Password field is not updated here as it should be empty by default.
     // It will only be updated when the user enters a new password.
   }
+   String getInitials(String name) {
+  List<String> nameParts = name.split(' ');
+  String initials = '';
 
+  for (String part in nameParts) {
+    if (part.isNotEmpty) {
+      initials += part[0].toUpperCase();
+    }
+  }
+
+  return initials;
+}
   void _handleUpdateProfile(List<String>? fieldsToUpdate) async {
     final updatedName = _nameController.text;
     final updatedPhoneNumber = _phoneController.text;
@@ -236,54 +247,53 @@ class _ProfilePageState extends State<ProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(20),
               color: Colors.red,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey),
+              child: Center(
+                child: Row(
+                 // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child:CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.white,
+                                    child: Text(
+                                      getInitials(widget.userName),
+                                      style: TextStyle(color: Colors.black, fontSize:24, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                      ),
                     ),
-                    child: Stack(
-                      children:  [
-                        Icon(Icons.person),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: IconButton(
-                            iconSize: 16,
-                            icon: Icon(Icons.camera_alt, color: Colors.white),
-                            onPressed: () {},
+                    SizedBox(width: 56),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const Text(
+                            'BTS:',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 56),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'BTS:',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
+                          SizedBox(width: 8),
+                          Text(
+                            widget.btsNumber,
+                            style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          widget.btsNumber,
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 16),

@@ -4,6 +4,7 @@ import 'patient_dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class PatientRegisterPage extends StatefulWidget {
   @override
@@ -20,6 +21,12 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
   bool _confirmPasswordVisible = false;
   String? gender;
   int? userId;
+  bool _isLoading = false; // New variable to track loading state
+
+  Future<void> _authenticate(String email, String password) async {
+    setState(() {
+      _isLoading = true; // Show progress indicator
+    });}
 
   void toggleGender(bool isMale) {
     setState(() {
@@ -28,7 +35,12 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
   }
 
   Future<void> _register(
-      String name, String email, String phoneNumber, String password, String confirmPassword, String gender) async {
+      String name, String email, String phoneNumber, String password, String confirmPassword,) async {
+       setState(() {
+      _isLoading = true;
+      
+    });
+    
     try {
       final response = await http.post(
         Uri.parse('https://elifesaver.online/includes/registerPatient.inc.php'),
@@ -37,14 +49,15 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
         },
         body: {
           'name': name,
-          'gender': gender,
           'email': email,
           'password': password,
           'confirm_password': confirmPassword,
           'phone': phoneNumber,
         },
       );
-
+       setState(() {
+      _isLoading = false; // Hide progress indicator
+    });
       final jsonData = jsonDecode(response.body);
       if (jsonData['success'] == true) {
         final userType = jsonData['type'];
@@ -57,8 +70,9 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
         prefs.setString('userName', userName);
 
         print(userName);
+        print(jsonData['error']);
         // Registration was successful
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => PatientDashboard(userId: userId!, userName: userName, userType: userType),
@@ -87,7 +101,9 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);},
               child: Text('OK'),
             ),
           ],
@@ -102,10 +118,11 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.fromLTRB(30, 40, 30, 30),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height:20),
               Center(
                 child: Image.asset(
                   'assets/e_life_saver.png',
@@ -121,135 +138,269 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              CardInput(
-                controller: _nameController,
-                hintText: 'Name',
-                keyboardType: TextInputType.text,
-              ),
-              const SizedBox(height: 20),
-              CardInput(
-                controller: _emailController,
-                hintText: 'Email',
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 20),
-              CardInput(
-                controller: _phoneNumberController,
-                hintText: 'Phone Number',
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 20),
-              CardInput(
-                controller: _passwordController,
-                hintText: 'Password',
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: !_passwordVisible,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                    color: Colors.grey,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _passwordVisible = !_passwordVisible;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              CardInput(
-                controller: _confirmPasswordController,
-                hintText: 'Confirm Password',
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: !_confirmPasswordVisible,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                    color: Colors.red,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _confirmPasswordVisible = !_confirmPasswordVisible;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Gender',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => toggleGender(true),
-                    style: ElevatedButton.styleFrom(
-                      primary: gender == 'male' ? Colors.red : Colors.white,
-                      onPrimary: gender == 'male' ? Colors.white : Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ),
-                      ),
-                    ),
-                    child: const Text('Male'),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => toggleGender(false),
-                    style: ElevatedButton.styleFrom(
-                      primary: gender == 'female' ? Colors.red : Colors.white,
-                      onPrimary: gender == 'female' ? Colors.white : Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ),
-                      ),
-                    ),
-                    child: const Text('Female'),
+              Container(
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(10),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5),
+        spreadRadius: 2,
+        blurRadius: 5,
+        offset: Offset(0, 2), // changes the position of the shadow
+      ),
+    ],
+  ),
+  child: TextField(
+    controller: _nameController,
+    keyboardType: TextInputType.text,
+    decoration: InputDecoration(
+      hintText: 'Name',
+      border: InputBorder.none,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+    ),
+  ),
+),
+const SizedBox(height: 20),
+Container(
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(10),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5),
+        spreadRadius: 2,
+        blurRadius: 5,
+        offset: Offset(0, 2), // changes the position of the shadow
+      ),
+    ],
+  ),
+  child: TextField(
+    controller: _emailController,
+    keyboardType: TextInputType.emailAddress,
+    decoration: InputDecoration(
+      hintText: 'Email',
+      border: InputBorder.none,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+    ),
+  ),
+),
+const SizedBox(height: 20),
+Container(
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(10),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5),
+        spreadRadius: 2,
+        blurRadius: 5,
+        offset: Offset(0, 2), // changes the position of the shadow
+      ),
+    ],
+  ),
+  child: TextField(
+    controller: _phoneNumberController,
+    keyboardType: TextInputType.phone,
+    decoration: InputDecoration(
+      hintText: 'Phone Number',
+      border: InputBorder.none,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+    ),
+  ),
+),
+const SizedBox(height: 20),
+ Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    blurRadius: 10,
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+              child: TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  contentPadding: EdgeInsets.all(16),
+                  border: InputBorder.none,
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _passwordVisible = !_passwordVisible;
+                      });
+                    },
+                    child: Icon(
+                      _passwordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.red,
+                    ),
                   ),
-                  onPressed: () {
-                    String name = _nameController.text.trim();
-                    String email = _emailController.text.trim();
-                    String phoneNumber = _phoneNumberController.text.trim();
-                    String password = _passwordController.text.trim();
-                    String confirmPassword = _confirmPasswordController.text.trim();
-                    String genderValue = gender ?? 'N/A';
-
-                    if (name.isNotEmpty &&
-                        email.isNotEmpty &&
-                        password.isNotEmpty &&
-                        confirmPassword.isNotEmpty &&
-                        phoneNumber.isNotEmpty) {
-                      if (password == confirmPassword) {
-                        _register(name, email, phoneNumber, password, confirmPassword, genderValue);
-                      } else {
-                        _showDialog('Registration failed', 'Passwords do not match. Please try again.');
-                      }
-                    } else {
-                      _showDialog('Registration failed', 'Please fill in all the required fields.');
-                    }
-                  },
-                  child: const Text('Register'),
                 ),
+                obscureText: !_passwordVisible,
               ),
+            ),
+            SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _confirmPasswordController,
+                decoration: InputDecoration(
+                  hintText: 'Confirm Password',
+                  contentPadding: EdgeInsets.all(16),
+                  border: InputBorder.none,
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _confirmPasswordVisible = !_confirmPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      _confirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+                obscureText: !_confirmPasswordVisible,
+              ),
+            ),
+              const SizedBox(height: 20),
+              
+              const SizedBox(height: 20),
+           Container(
+  child: Container(
+          width: 350,
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.all(4),
+          child: TextButton(
+            
+            onPressed: () {
+              showDialog(
+                context: context,
+                barrierDismissible: false, // Prevent dialog dismissal on tap outside
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SpinKitCircle(
+                            color: Colors.red,
+                            size: 50.0,
+                          ),
+                          SizedBox(height: 16.0),
+                          Text(
+                            'Loading...',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+              String name = _nameController.text.trim();
+              String email = _emailController.text.trim();
+              String phoneNumber = _phoneNumberController.text.trim();
+              String password = _passwordController.text.trim();
+              String confirmPassword = _confirmPasswordController.text.trim();
+
+              if (name.isNotEmpty &&
+                  email.isNotEmpty &&
+                  password.isNotEmpty &&
+                  confirmPassword.isNotEmpty &&
+                  phoneNumber.isNotEmpty) {
+                if (password == confirmPassword) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: Container(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SpinKitCircle(
+                                color: Colors.red,
+                                size: 50.0,
+                              ),
+                              SizedBox(height: 16.0),
+                              Text(
+                                'Registering...',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                  _register(name, email, phoneNumber, password, confirmPassword);
+                } else {
+                   showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Registration failed'),
+          content: Text('Passwords do not match. Please try again.'),
+          actions: [
+            TextButton(
+              onPressed: () {Navigator.pop(context);
+              Navigator.pop(context);},
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+                }
+              } else {
+                showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Registration failed'),
+          content: Text('Please fill in all the required fields.'),
+          actions: [
+            TextButton(
+              onPressed: () {Navigator.pop(context);
+              Navigator.pop(context);},
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+              }
+            },
+            child: const Text(
+              'Register',
+              style: TextStyle(color: Colors.white),
+              
+            ),
+          ),
+        ),
+),
               const SizedBox(height: 10),
               Center(
                 child: Row(

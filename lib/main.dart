@@ -215,19 +215,23 @@ class MySecondScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/blood.png'),
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Text(
-                'Find a compatible blood donor anytime, anywhere with ease',
-                style: TextStyle(fontSize: 15),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            children: [
+
+              SizedBox(height:100),
+              Image.asset('assets/blood.png'),
+              Padding(
+                padding: const EdgeInsets.only(left:40.0),
+                child: Text(
+                  'Find a compatible blood donor anytime, anywhere with ease',
+                  style: TextStyle(fontSize: 15),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -235,7 +239,7 @@ class MySecondScreen extends StatelessWidget {
         backgroundColor: Colors.red,
         onPressed: () {
           // Go to the login page.
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LoginPage()),
           );

@@ -7,6 +7,11 @@ import 'request_blood.dart';
 import 'login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'donor_appeal.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
+import 'package:flutter/services.dart';
+
 
 class Dashboard extends StatefulWidget {
  final int userId;
@@ -19,13 +24,15 @@ class Dashboard extends StatefulWidget {
   final String password;
   final String btsNumber;
   final String bloodGroup;
+  final String gender;
   Dashboard({required this.userId, required this.userName, required this.userType, required this.phoneNumber,
     required this.email,
     required this.city,
     required this.address,
     required this.password,
     required this.btsNumber,
-    required this.bloodGroup});
+    required this.bloodGroup,
+    required this.gender});
   
 
  
@@ -34,6 +41,9 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DasboardState extends State<Dashboard> {
+  int? _credits;
+  String _lastDonationDate = '';
+String _nextDonationDate = '';
   void _onLoginSuccess(BuildContext context, String userName, int userId, String userType) {
     // After successful login, navigate to the PatientDashboard and pass the userId and userType
     Navigator.pushReplacement(
@@ -73,7 +83,75 @@ class _DasboardState extends State<Dashboard> {
     );
   }
 }
-  
+        Future<void> fetchCredits() async {
+  try {
+    // Make a GET request to the server
+    final response = await http.get(Uri.parse('https://elifesaver.online/donor/includes/get_credit.inc.php?bts_number=${widget.btsNumber}'));
+
+    if (response.statusCode == 200) {
+  final body = json.decode(response.body);
+  final credits = body['credit'];
+  final success = body['success'];
+   print(success);
+    print(credits);
+  if (credits != null) {
+    setState(() {
+      _credits = credits;
+    });
+  } else {
+    throw Exception('Failed to parse credits');
+  }
+} else {
+  throw Exception('Failed to fetch credits');
+}
+} catch (error) {
+throw Exception('Failed to fetch credits: $error');
+}
+}
+
+ Future<void> _fetchDonationsData() async {
+  try {
+    final id = widget.userId;
+    final gender = widget.gender;
+    final url = Uri.parse('https://elifesaver.online/includes/get_donation_info.inc.php?id=${id ?? ""}&gender=${gender ?? ""}');
+    
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    );
+
+    print(gender);
+    print(id);
+
+    final jsonData = jsonDecode(response.body);
+    print(jsonData['success']);
+
+    if (jsonData['success'] == true) {
+      print(jsonData);
+      final lastDonationDate = jsonData['lastDonationDate'];
+      final nextDonationDate = jsonData['nextDonationDate'];
+
+      setState(() {
+        _lastDonationDate = lastDonationDate;
+        _nextDonationDate = nextDonationDate;
+      });
+    
+    } else {
+      print('Failed to fetch results');
+    }
+  } catch (error) {
+    print('Error during API call: $error');
+  }
+}
+
+@override
+void initState() {
+  super.initState();
+  _fetchDonationsData();
+}
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -110,7 +188,19 @@ class _DasboardState extends State<Dashboard> {
                 color: Colors.red,
               ),
               onPressed: () {
-                // Handle notification button press
+               Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => NotificationPage(
+      userId: widget.userId,
+      userType: widget.userType,
+      btsNumber: widget.btsNumber,
+      bloodGroup:widget.bloodGroup,
+      city:widget.city,
+      address:widget.address
+    ),
+  ),
+); // Handle notification button press
               },
             ),
             IconButton(
@@ -120,20 +210,21 @@ class _DasboardState extends State<Dashboard> {
                 color: Colors.red,
               ),
               onPressed: () {
-                // Handle notification button press
+                Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DonorAppealPage(userId: widget.userId, userType: widget.userType, userName: widget.userName,
+          phoneNumber: widget.phoneNumber,
+          address: widget.address,
+          city: widget.city,
+          password: widget.password,
+          btsNumber: widget.btsNumber,
+          email: widget.email,
+          bloodGroup: widget.bloodGroup,
+          gender:widget.gender)),
+    );// Handle notification button press
               },
             ),
-            SizedBox(width: 1,),
-            IconButton(
-              padding: EdgeInsets.zero,
-              icon: CircleAvatar(
-             child: Icon(Icons.person, color: Colors.grey,),
-             backgroundColor: Colors.white,
-              ),
-              onPressed: () {
-                // Handle profile button press
-              },
-            ),
+            
           ],
       ),
       // Add a Drawer widget to the Scaffold
@@ -151,7 +242,7 @@ class _DasboardState extends State<Dashboard> {
   ),
   child: Column(
     children: [
-      Image.asset('assets/e_life_saver.png', height: 100, width: 100,),
+      Image.asset('assets/logo.png', height: 100, width: 100,),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -166,7 +257,7 @@ class _DasboardState extends State<Dashboard> {
             onTap: () {
              Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Dashboard(userId: widget.userId, userName: widget.userName, userType: widget.userType, phoneNumber: widget.phoneNumber, address: widget.address, city: widget.city, password: widget.password, btsNumber: widget.btsNumber, email: widget.email, bloodGroup: widget.bloodGroup)),
+      MaterialPageRoute(builder: (context) => Dashboard(userId: widget.userId, userName: widget.userName, userType: widget.userType, phoneNumber: widget.phoneNumber, address: widget.address, city: widget.city, password: widget.password, btsNumber: widget.btsNumber, email: widget.email, bloodGroup: widget.bloodGroup,  gender:widget.gender)),
     );
             },
             child: Icon(
@@ -199,26 +290,11 @@ Navigator.push(
           password: widget.password,
           btsNumber: widget.btsNumber,
           email: widget.email,
-          bloodGroup: widget.bloodGroup)),
+          bloodGroup: widget.bloodGroup,
+           gender:widget.gender)),
     );
   },
 ), 
-ListTile(
-  title: Row(
-    children: [
-      Icon(Icons.favorite, color: Colors.red),
-      SizedBox(width: 10),
-      Text('Blood request'),
-    ],
-  ),
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RequestPage()),
-    );
-  },
-),
-
 ListTile(
   title: Row(
     children: [
@@ -237,6 +313,8 @@ Navigator.push(
       userType: widget.userType,
       btsNumber: widget.btsNumber,
       bloodGroup:widget.bloodGroup,
+      city:widget.city,
+      address:widget.address
     ),
   ),
 );
@@ -295,7 +373,7 @@ ListTile(
     );
   },
 ),
-SizedBox(height: 20,),
+SizedBox(height: 120,),
 Padding(
   padding: const EdgeInsets.all(18.0),
   child:   ListTile(
@@ -330,96 +408,251 @@ Padding(
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Container(
-          child: Column(
-            children: [
-              Text('Hi, ${widget.userName}!'),
-              Align(
-                  alignment: Alignment.centerRight,
-                child: SizedBox(
-                     
-                  child: Container(
-                    child: Column(
-                      children: [
-                        
-                        Text(
-                          '1500',
-                          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.right,
-                        ),
-                        Text(
-                          'Credits',
-                          style: TextStyle(fontSize: 16.0),
-                          textAlign: TextAlign.right,
-                        ),
+        padding: const EdgeInsets.all(16.0),
+    
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+               Align(
+                alignment: Alignment.centerRight,
+                 child: Column(
+                        children: [
+                          Text(
+                 '${_credits ?? '0'}',
+                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                            ),
+                          Text(
+                            'Credits',
+                            style: TextStyle(fontSize: 16.0),
+                            
+                          ),
+                        ]),
+               ),
+                Row(
+                  children: [
+                    Text('Hello'),
+                SizedBox(width:6),
+                Text('${widget.userName}',style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold))
+                  ],
+                ),
+                SizedBox(height:8),
+                Row(
+                  children: [
+                    Text('Bts Number : '),
+                SizedBox(width:6),
+                Text('${widget.btsNumber}', style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold),)
+                    
+                  ],
+                ),
+                
                         SizedBox(height: 30,),
                 
                         Container(
-                          height: 110,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                                border: Border.all(color: Colors.red, width: 6.0),
-                          ),
-                          width: 350,
-                          
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                '21/05/2023',
-                                style: TextStyle(fontSize: 19.0),
-                              ),
-                              SizedBox(height:10),
-                              Text(
-                                'Last Donations',
-                                style: TextStyle(fontSize: 16.0),
-                              ),
-                               SizedBox(height: 5,),
-                              Align(
-                                  alignment: Alignment.bottomRight,
-                                child: Container(
-                                  padding: EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Text(
-                                    'Learn more',
-                                    style: TextStyle(fontSize: 16.0),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30,),
-                        Container(
-                          height: 100,
-                          width: 350,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          padding: const EdgeInsets.all(19.0),
-                          child: Center(
-                            child: Column(
+  height: 140,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(8.0),
+    border: Border.all(color: Colors.red, width: 6.0),
+  ),
+  width: 350,
+  padding: const EdgeInsets.all(8.0),
+  child: Column(
+    children: [
+      Align(
+        alignment: Alignment.topLeft,
+        child: Text(
+          'Last Donations',
+          style: TextStyle(fontSize: 16.0, color: Colors.red),
+        ),
+      ),
+      SizedBox(height: 20),
+
+      Text(
+        _lastDonationDate.isNotEmpty ? _lastDonationDate : 'No Donation yet',
+        style: TextStyle(fontSize: 19.0),
+      ),
+      SizedBox(height: 5),
+      
+      Container(
+        height: 40,
+        width: 240,
+        padding: EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: TextButton(
+          onPressed: () {
+           showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Center(
+                  child: AlertDialog(
+                    contentPadding: EdgeInsets.all(16.0),
+                    content: Expanded(
+                      child: Container(
+                        height: 250,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Text(
-                                  '21/08/2023',
-                                  style: TextStyle(fontSize: 19.0,
-                                  color: Colors.white),
-                                ),
-                                SizedBox(height: 8,),
-                                Text(
-                                  'Next Donation',
-                                  style: TextStyle(fontSize: 16.0,
-                                  color: Colors.white),
+                                IconButton(
+                                  icon: Icon(Icons.cancel),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
                                 ),
                               ],
                             ),
-                          ),
-                        ),
+                            Icon(
+                              Icons.notification_important,
+                              size: 40,
+                              color: Colors.red,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Donate Blood to Gain credits',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Text(
+                                    
+                                    'Reaction:',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(width: 4,),
+                                  if (_lastDonationDate == '') 
+                                  Expanded(child: Text('You have not perfomed any donation yet.'))
+                                  else
+                                  Text('Your blood was used to save a life.')
+                                ],
+                              ),
+                            ),
+                             Text('Thank you for choosing Us.') ,
+                             Row(
+                               children: [
+                                 Text('Type:',
+                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                                  SizedBox(width: 4,),
+                               
+                               Expanded(child: Text('voluntary, replacement or appeal.'))
+                               ],
+                             ),              
+                             Text('Elifesaver',
+                               style: TextStyle(fontWeight: FontWeight.bold),),       ],
+                                                  ),
+                      ),
+                    ),
+                                            ));
+                                          },
+                                        ); // ...
+          },
+          child: Text(
+            'Learn more',
+            style: TextStyle(fontSize: 16.0, color: Colors.black),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+    SizedBox(height: 30,),
+// ...
+
+ Container(
+  height: 140,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(8.0),
+    border: Border.all(color: Colors.red, width: 6.0),
+  ),
+  width: 350,
+  padding: const EdgeInsets.all(8.0),
+  child: Column(
+    children: [
+      Align(
+        alignment: Alignment.topLeft,
+        child: Text(
+          'Next Donations',
+          style: TextStyle(fontSize: 16.0, color: Colors.red),
+        ),
+      ),
+      SizedBox(height: 20),
+
+      Text(
+        _nextDonationDate.isNotEmpty ? _nextDonationDate : 'No Donation yet',
+        style: TextStyle(fontSize: 19.0),
+      ),
+      SizedBox(height: 5),
+      
+      Container(
+        height: 40,
+        width: 240,
+        padding: EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: TextButton(
+          onPressed: () {
+           showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Center(
+                  child: AlertDialog(
+                    contentPadding: EdgeInsets.all(16.0),
+                    content: Expanded(
+                      child: Container(
+                        height: 220,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.cancel),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                            Icon(
+                              Icons.notification_important,
+                              size: 40,
+                              color: Colors.red,
+                            ),
+                            SizedBox(height: 16),
+                               if (widget.gender == 'male') 
+                                 Expanded(child: Text('After donating, you need to wait for up to 3 months before you can donate again. see you soon'),)
+                                 else
+                                 Expanded(child: Text('After donating, you need to wait for up to 4 months before you can donate again. see you soon')),
+                               SizedBox(height: 6,),
+                               Text('Elifesaver',
+                               style: TextStyle(fontWeight: FontWeight.bold),),               
+                                                ],
+                                                  ),
+                      ),
+                    ),
+                                            ));
+                                          },
+                                        ); // ...
+          },
+          child: Text(
+            'Learn more',
+            style: TextStyle(fontSize: 16.0, color: Colors.black),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
                         SizedBox(height: 30,),
                         Container(
                           height: 100,
@@ -429,25 +662,30 @@ Padding(
                             border: Border.all(color: Colors.red, width: 6.0),
                           ),
                           child: Center(
-                            child: Text(
-                              'Results',
-                              style: TextStyle(fontSize: 19.0),
+                            child: TextButton(
+                              onPressed: (){
+                                 Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ResultPage(btsNumber:widget.btsNumber)),
+              );
+                              },
+                              child: Text(
+                                'Results',
+                                style: TextStyle(fontSize: 19.0, color: Colors.black),
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                        
-                        ),
-                ),
-                    
-                  ),
-            ],
           ),
-            ),
-      ),
-        )
-      );
+        ),
+              ),
+            
+          );
+            
+    
+      
      
     
   }

@@ -6,6 +6,7 @@ import 'make_appeal.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class PatientDashboard extends StatefulWidget {
   final int userId;
@@ -20,7 +21,7 @@ class PatientDashboard extends StatefulWidget {
 
 class _PatientDashboardState extends State<PatientDashboard> {
   List<Map<String, dynamic>> _bloodAppeals = [];
-
+   bool _isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -28,6 +29,10 @@ class _PatientDashboardState extends State<PatientDashboard> {
   }
 
  Future<void> _fetchBloodAppeals() async {
+  setState(() {
+      _isLoading = true;
+      
+    });
   try {
     final url = Uri.parse('https://elifesaver.online/includes/get_all_blood_appeals_for_user.inc.php');
     final response = await http.post(
@@ -37,7 +42,10 @@ class _PatientDashboardState extends State<PatientDashboard> {
         'user_type': widget.userType,
       },
     );
-    
+      setState(() {
+      _isLoading = false;
+      
+    });
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       final bool status = jsonData['success'];
@@ -120,13 +128,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
               );
             },
           ),
-          actions: [
-            CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person, color: Colors.grey,),
-            ),
-            SizedBox(width: 16),
-          ],
+          
         ),
         drawer: Drawer(
           child: ListView(
@@ -138,7 +140,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
                 ),
                 child: Column(
                   children: [
-                    Image.asset('assets/e_life_saver.png', height: 100, width: 100,),
+                    Image.asset('assets/logo.png', height: 100, width: 100,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -223,7 +225,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
                   );
                 },
               ),
-              SizedBox(height: 90,),
+              SizedBox(height: 110,),
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: ListTile(
@@ -235,6 +237,32 @@ class _PatientDashboardState extends State<PatientDashboard> {
                     ],
                   ),
                   onTap: () {
+                    
+                     showDialog(
+                context: context,
+                barrierDismissible: false, // Prevent dialog dismissal on tap outside
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SpinKitCircle(
+                            color: Colors.red,
+                            size: 50.0,
+                          ),
+                          SizedBox(height: 16.0),
+                          Text(
+                            'making appeal...',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
                     logoutUser(context);
                   },
                 ),
@@ -254,17 +282,28 @@ class _PatientDashboardState extends State<PatientDashboard> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: Colors.red,
-                      width: 8,
+                      width: 1,
                     ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Name: ${widget.userName}!',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            'Hi',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 5,),
+                          Text('${widget.userName}!',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16
+                            ),)
+                        ],
                       ),
                       // ... (rest of your user info code)
                     ],
@@ -274,8 +313,12 @@ class _PatientDashboardState extends State<PatientDashboard> {
                 if (_bloodAppeals.isNotEmpty)
               ..._bloodAppeals.map((appeal) => Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                      padding: EdgeInsets.all(16),
+                child:_isLoading
+                ? SpinKitFadingCircle(
+        color: Colors.red, // Choose your desired color
+        size: 50.0, // Choose your desired size
+      )  :  Container(
+                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         color: Colors.grey[200],
@@ -292,7 +335,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 68),
+                            SizedBox(width: 38),
                             Expanded(
                               child: Text(
                                 '${appeal['creation_date']} Status: ${appeal['status']}',
@@ -310,7 +353,11 @@ class _PatientDashboardState extends State<PatientDashboard> {
                     ),
               ))
             else
-              Container(
+              _isLoading
+                ? SpinKitFadingCircle(
+        color: Colors.red, // Choose your desired color
+        size: 30.0, // Choose your desired size
+      )  : Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),

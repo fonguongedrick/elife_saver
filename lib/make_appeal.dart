@@ -2,20 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'patient_dashboard.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 
 class HospitalLocation {
-  final int id;
-  final String name;
+  int facilityId;
+  int healthFacilityId;
+  String name;
+  String city;
+  String address;
 
-  HospitalLocation({required this.id, required this.name});
+  HospitalLocation({
+    required this.facilityId,
+    required this.healthFacilityId,
+    required this.name,
+    required this.city,
+    required this.address,
+  });
 
   factory HospitalLocation.fromJson(Map<String, dynamic> json) {
     return HospitalLocation(
-      id: json['id'],
+      facilityId: json['facility_id'],
+      healthFacilityId: json['health_facility_id'],
       name: json['name'],
+      city: json['city'],
+      address: json['address'],
     );
   }
 }
+
 
 class MakeAppealPage extends StatefulWidget {
   final int userId;
@@ -29,7 +44,7 @@ class MakeAppealPage extends StatefulWidget {
 }
 
 class _MakeAppealPageState extends State<MakeAppealPage> {
-  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', 'None'];
   String selectedBloodGroup = 'A+';
   final List<String> rhFactors = ['Positive', 'Negative'];
   String selectedRhFactor = 'Positive';
@@ -39,12 +54,17 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
   HospitalLocation? selectedHospitalLocation;
   final hospitalLocationController = TextEditingController();
   final medicalInformationController = TextEditingController();
-
+ String selectedHospital = ''; // Define selectedHospital variable
+  List<String> facilityNames = [];
+ bool  _isLoading = false;
   @override
-  void initState() {
+   void initState() {
     super.initState();
-    hospitalLocations = [];
-    fetchHospitalLocations();
+    fetchHospitalLocations().then((_) {
+      setState(() {
+        selectedHospital = facilityNames.isNotEmpty ? facilityNames[0] : '';
+      });
+    });
   }
 
   @override
@@ -59,18 +79,25 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
   }
 
   Future<void> fetchHospitalLocations() async {
+    setState(() {
+      _isLoading = true;
+      
+    });
     try {
       final response = await http.get(
-        Uri.parse('https://elifesaver.online/includes/get_all_health_facilities.inc.php'), // Replace with your actual API endpoint
+        Uri.parse('https://elifesaver.online/includes/get_all_heath_facilities.inc.php'),
       );
-        final jsonData = json.decode(response.body);
-        print(jsonData);
+      setState(() {
+      _isLoading = false;
+      
+    });
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
+       print(jsonData);
         if (jsonData['success'] == true) {
           final List<dynamic> facilities = jsonData['health_facilities'];
           setState(() {
-            hospitalLocations = facilities.map((item) => HospitalLocation.fromJson(item)).toList();
+            facilityNames = facilities.map((facility) => facility['name'] as String).toList();
           });
         } else {
           print('Error: ${jsonData['message']}');
@@ -119,9 +146,15 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
               Row(
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(4.0),
+                   decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
                     height: 40,
                     padding: EdgeInsets.all(8),
@@ -134,8 +167,14 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                     height: 40,
                     padding: EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(4.0),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -148,7 +187,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                           },
                           child: Text(
                             '-',
-                            style: TextStyle(fontSize: 16.0),
+                            style: TextStyle(fontSize: 30.0),
                           ),
                         ),
                         SizedBox(width: 16.0),
@@ -165,7 +204,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                           },
                           child: Text(
                             '+',
-                            style: TextStyle(fontSize: 16.0),
+                            style: TextStyle(fontSize: 20.0),
                           ),
                         ),
                       ],
@@ -177,9 +216,15 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
               Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -197,9 +242,15 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                     Container(
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
                       padding: EdgeInsets.symmetric(horizontal: 12.0),
                       child: DropdownButton<String>(
                         value: selectedBloodGroup,
@@ -224,89 +275,54 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                 ),
               ),
               SizedBox(height: 16.0),
+              
               Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        'Select Rh Factor',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(height: 8),
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                      child: DropdownButton<String>(
-                        value: selectedRhFactor,
-                        icon: Icon(Icons.arrow_drop_down),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: TextStyle(color: Colors.black),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedRhFactor = newValue!;
-                          });
-                        },
-                        items: rhFactors.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16.0),
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: DropdownButton<HospitalLocation>(
-                  value: selectedHospitalLocation,
-                  icon: Icon(Icons.arrow_drop_down),
-                  iconSize: 24,
-                  elevation: 16,
-                  style: TextStyle(color: Colors.black),
-                  onChanged: (HospitalLocation? newValue) {
-                    setState(() {
-                      selectedHospitalLocation = newValue;
-                    });
-                  },
-                  items: hospitalLocations.map<DropdownMenuItem<HospitalLocation>>((HospitalLocation location) {
-                    return DropdownMenuItem<HospitalLocation>(
-                      value: location,
-                      child: Text(location.name),
-                    );
-                  }).toList(),
-                ),
-              ),
+                  child:  _isLoading
+                    ? SpinKitFadingCircle(
+        color: Colors.black, // Choose your desired color
+        size: 30.0, // Choose your desired size
+      )
+                : DropdownButton<String>(
+        value: selectedHospital,
+        hint: Text('Select a hospital'),
+        onChanged: (String? value) {
+          setState(() {
+            selectedHospital = value!;
+          });
+        },
+        items: facilityNames.map((name) {
+          return DropdownMenuItem<String>(
+            value: name,
+            child: Text(name),
+          );
+        }).toList(),
+      ),
+    ),
+              
               SizedBox(height: 16.0),
               Container(
                 height: 80,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
                 child: TextField(
                   controller: medicalInformationController,
                   maxLines: 3,
@@ -322,13 +338,38 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                 ),
               ),
               SizedBox(height: 32.0),
-              Container(
+               Container(child:Container(
                 decoration: BoxDecoration(
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 child: TextButton(
                   onPressed: () async {
+                     showDialog(
+                context: context,
+                barrierDismissible: false, // Prevent dialog dismissal on tap outside
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SpinKitCircle(
+                            color: Colors.red,
+                            size: 50.0,
+                          ),
+                          SizedBox(height: 16.0),
+                          Text(
+                            'making appeal...',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
                     try {
                       // Send the user's details to the server
                       final response = await http.post(
@@ -340,7 +381,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                           'number_of_bags': numberOfBags.toString(),
                           'blood_group': selectedBloodGroup,
                           'rhFactor': selectedRhFactor,
-                          'health_facility': selectedHospitalLocation?.name ?? hospitalLocationController.text,
+                          'health_facility': selectedHospital,
                           'medical_info': medicalInformationController.text,
                         },
                       );
@@ -432,7 +473,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                   ),
                 ),
               ),
-            ],
+          )],
           ),
         ),
       ),

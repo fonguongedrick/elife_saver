@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class DonorInfoPage extends StatefulWidget {
   
@@ -14,7 +15,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
   bool isMaleActive = true;
   DateTime? selectedDate;
   String bloodGroupValue = 'Select Blood Group';
-  String factorValue = 'Select Your Factor';
+  String factorValue = 'Select Your city';
 
   void toggleGender(bool isMale) {
     setState(() {
@@ -43,6 +44,9 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
   final phoneNumberController = TextEditingController();
   final cityController = TextEditingController();
   final addressController = TextEditingController();
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+  bool _isLoading = false;
 
   Future<void> _registerUser() async {
   final String name = nameController.text;
@@ -74,7 +78,10 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
     );
     return;
   }
-
+    setState(() {
+      _isLoading = true;
+      
+    });
    final response = await http.post(
     Uri.parse('https://elifesaver.online/includes/registerDonor.inc.php'),
     headers: {
@@ -92,7 +99,10 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
       'blood_group': bloodGroup,
     },
   );
-   
+   setState(() {
+      _isLoading = false;
+      
+    });
    final jsonData = jsonDecode(response.body);
   
     final userType = jsonData['type'];
@@ -118,12 +128,12 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
       prefs.setString('email', Email);
 
     print(user);
-    
+    print(jsonData);
   // Check if the response is successful
-  if (response.statusCode == 200) {
     // Remove HTML tags from the response body
     final cleanedResponseBody = response.body.replaceAll(RegExp(r'<[^>]*>'), '');
-
+    print(jsonData['success']);
+     
     try {
       // Parse the cleaned response body as JSON
       final jsonData = jsonDecode(cleanedResponseBody);
@@ -131,11 +141,11 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
       if (jsonData['success'] == true) {
         // Registration successful
         // Navigate to the dashboard
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Dashboard(userId: userId, userName: userName, userType: userType, phoneNumber: phonenumber, address: Address, city: City, password: Password, btsNumber: btsnumber, email: Email, bloodGroup: bloodGroup)),
+          MaterialPageRoute(builder: (context) => Dashboard(userId: userId, userName: userName, userType: userType, phoneNumber: phonenumber, address: Address, city: City, password: Password, btsNumber: btsnumber, email: Email, bloodGroup: bloodGroup, gender:gender)),
         );
-      } else {
+      } else if(jsonData['success'] == false){
         // Registration failed, display the error message
         String errorMessage = jsonData['error'];
         showDialog(
@@ -143,7 +153,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Registration failed'),
-              content: Text(errorMessage),
+              content: Text(''),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -158,28 +168,8 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
       // Error occurred while decoding JSON or accessing data
       print('Error decoding JSON or accessing data: $e');
     }
-  } else {
-    // Request failed, display an error message
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Registration failed'),
-          content: Text('An error occurred while registering. Please try again later.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+  
   }
-}
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -249,51 +239,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                 ),
               ),
               // Password TextField
-              SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    contentPadding: EdgeInsets.all(16),
-                    border: InputBorder.none,
-                  ),
-                  obscureText: true,
-                ),
-              ),
-              // Confirm Password TextField
-              SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: confirmPasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Confirm Password',
-                    contentPadding: EdgeInsets.all(16),
-                    border: InputBorder.none,
-                  ),
-                  obscureText: true,
-                ),
-              ),
+              
               // Phone Number TextField
               SizedBox(height: 16),
               Container(
@@ -320,25 +266,47 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
               // City TextField
               SizedBox(height: 16),
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: cityController,
-                  decoration: InputDecoration(
-                    hintText: 'City',
-                    contentPadding: EdgeInsets.all(16),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
+                padding: EdgeInsets.all(6),
+                width:325,
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(10),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5),
+        blurRadius: 10,
+      ),
+    ],
+  ),
+  child: DropdownButton<String>(
+    value: factorValue,
+    iconSize: 24,
+    elevation: 16,
+    underline: Container(
+          height: 2,
+          color: Colors.white,
+        ),
+    onChanged: (String? newValue) {
+      setState(() {
+        factorValue = newValue!;
+        print(factorValue);
+      });
+    },
+    items: <String>[
+      'Select Your city',
+      'Bamenda',
+      'Limbe',
+      'Buea',
+      'Bafoussam'
+    ].map<DropdownMenuItem<String>>((String value) {
+      return DropdownMenuItem<String>(
+        value: value,
+        child: Text(value),
+        
+      );
+    }).toList(),
+  ),
+),
               // Address TextField
               SizedBox(height: 16),
               Container(
@@ -373,7 +341,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                     onTap: () => toggleGender(true),
                     child: CircleAvatar(
                       backgroundColor: isMaleActive ? Colors.red : Colors.grey,
-                      radius: 6,
+                      radius: 10,
                     ),
                   ),
                   SizedBox(width: 8),
@@ -386,7 +354,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                     onTap: () => toggleGender(false),
                     child: CircleAvatar(
                       backgroundColor: !isMaleActive ? Colors.red : Colors.grey,
-                      radius: 6,
+                      radius: 10,
                     ),
                   ),
                   SizedBox(width: 8),
@@ -450,9 +418,9 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                       iconSize: 24,
                       elevation: 16,
                       underline: Container(
-                        height: 2,
-                        color: Colors.red,
-                      ),
+          height: 2,
+          color: Colors.white,
+        ),
                       onChanged: (String? newValue) {
                         setState(() {
                           bloodGroupValue = newValue!;
@@ -467,7 +435,8 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                         'A-',
                         'B-',
                         'O-',
-                        'AB-'
+                        'AB-',
+                        'None'
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -479,64 +448,184 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                 ),
               ),
               SizedBox(height: 16),
-              Container(
-                width: 350,
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: DropdownButton<String>(
-                  value: factorValue,
-                  iconSize: 24,
-                  elevation: 16,
-                  underline: Container(
-                    height: 2,
-                    color: Colors.red,
+               Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    blurRadius: 10,
                   ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      factorValue = newValue!;
-                      print(factorValue);
-                    });
-                  },
-                  items: <String>[
-                    'Select Your Factor',
-                    'Rh+',
-                    'Rh-',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
+                ],
               ),
-              SizedBox(height: 32),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(10),
+              child: TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  contentPadding: EdgeInsets.all(16),
+                  border: InputBorder.none,
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.red,
+                    ),
+                  ),
                 ),
-                child: TextButton(
-                  onPressed: _registerUser,
+                obscureText: !_isPasswordVisible,
+              ),
+            ),
+            SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: confirmPasswordController,
+                decoration: InputDecoration(
+                  hintText: 'Confirm Password',
+                  contentPadding: EdgeInsets.all(16),
+                  border: InputBorder.none,
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+                obscureText: !_isConfirmPasswordVisible,
+              ),
+            ),
+            SizedBox(height: 16,),
+              Container(
+                child: _isLoading
+      ? Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 0.5,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+            value: 50,
+          ),
+        )
+      : Container(
+          width: 350,
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: TextButton(
+            onPressed: () async {
+              showDialog(
+                context: context,
+                barrierDismissible: false, // Prevent dialog dismissal on tap outside
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SpinKitCircle(
+                            color: Colors.red,
+                            size: 50.0,
+                          ),
+                          SizedBox(height: 16.0),
+                          Text(
+                            'Loading...',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+                     if (nameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        phoneNumberController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Fields Required'),
+            content: Text('Please fill in all the fields.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );}
+      else if (passwordController.text != confirmPasswordController.text) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Password Mismatch'),
+            content: Text('Password and Confirm Password do not match.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      ;
+    }
+      else {
+       await _registerUser(); 
+      }
+    }
+                   ,
                   child: Text(
                     'Finish',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
-            ],
+          )],
           ),
         ),
       ),
     );
   }
 }
+
+
+
+    
+
+    
+  

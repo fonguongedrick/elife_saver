@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 String formatDateString(String dateString) {
   if (dateString.isEmpty) {
@@ -13,6 +14,7 @@ String formatDateString(String dateString) {
 }
 class ResultPage extends StatefulWidget {
   final String btsNumber;
+
   ResultPage({required this.btsNumber});
   
   @override
@@ -21,6 +23,7 @@ class ResultPage extends StatefulWidget {
 
 class _ResultPageState extends State<ResultPage> {
   List<Map<String, dynamic>> _results = [];
+ bool _isLoading = false; 
 
   @override
   void initState() {
@@ -29,6 +32,10 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Future<void> _fetchResults() async {
+    setState(() {
+      _isLoading = true; 
+      // Hide progress indicator
+    });
      try {
       final btsNumber = widget.btsNumber;
       
@@ -47,7 +54,10 @@ class _ResultPageState extends State<ResultPage> {
         // Otherwise, if it's part of the headers or body, you can include it here.
         // For example, if it's part of the headers: 'Authorization': 'Bearer ${widget.btsNumber}'
         // If it's part of the body, you can pass it as a parameter like in the POST method.
-      
+      setState(() {
+      _isLoading = false; 
+      // Hide progress indicator
+    });
 print(btsNumber);
 final jsonData = json.decode(response.body);
         final bool success = jsonData['success'];
@@ -100,48 +110,151 @@ final jsonData = json.decode(response.body);
       body: Padding(
         padding: const EdgeInsets.all(6.0),
         child: Container(
-          child: Column(
-              //crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Stack(
             children: [
-              SizedBox(height: 40,),             
-              Row(
+              Column(
+                  //crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: Text('Blood Donors Test Results',
-                    style:TextStyle(fontSize: 24,
-                    color: Colors.red)),
-                  ),
-                  SizedBox(width: 15,),
-                  Column(
+                  SizedBox(height: 40,),             
+                  Row(
                     children: [
-                      Text('Last Date of Test '),
-                          for (final result in _results)
-                      Text(formatDateString(result['date'] ?? ''))
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(height: 50,),
-            Text('Serology: Predonation: RDT',
-                    style:TextStyle(fontSize: 24,
-                    color: Colors.red)), 
-              SizedBox(height: 20,),
-                    // Check if _results is empty
-              _results.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No results available yet',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      Expanded(
+                        child: Text('Blood Donors Test Results',
+                        style:TextStyle(fontSize: 24,
+                        color: Colors.red)),
                       ),
-                    )
-                  : Expanded(
-                  // Use a Table to display the results in a tabular format
-                  child: Column(
-                    children: [
-                      Table(
+                      SizedBox(width: 15,),
+                      Column(
+                        children: [
+                          Text('Last Date of Test '),
+                              for (final result in _results)
+                          for (final result in _results)
+  Text(formatDateString(result['date'] ?? ''), style: TextStyle(fontWeight: FontWeight.bold),),
+                        ],
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 50,),
+                Text('Serology: Predonation: RDT',
+                        style:TextStyle(fontSize: 24,
+                        color: Colors.red)), 
+                  SizedBox(height: 20,),
+                        // Check if _results is empty
+               _results.isEmpty
+                      ?
+       Text(
+                            'No results available yet',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          )
+                        
+                      : Expanded(
+                      // Use a Table to display the results in a tabular format
+                      child: Column(
+                        children: [
+                          Table(
+                            columnWidths: const {
+                              0: FlexColumnWidth(2),
+                              1: FlexColumnWidth(2),
+                            },
+                            children: [
+                              // Table headings
+                              TableRow(
+                                children: [
+                                  TableCell(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      color: Colors.red,
+                                      child: Center(
+                                        child: Text(
+                                          'HCV',
+                                          style: TextStyle(color: Colors.white, fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      color: Colors.red,
+                                      child: Center(
+                                        child: Text(
+                                          'HBAg',
+                                          style: TextStyle(color: Colors.white, fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      color: Colors.red,
+                                      child: Center(
+                                        child: Text(
+                                          'HIV',
+                                          style: TextStyle(color: Colors.white, fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                 
+                                ],
+                              ),
+                              // Display the test results in each row
+                              for (final result in _results)
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        color: Colors.grey[300],
+                                        child: Text(
+                                          result['HCV'] ?? '',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        color: Colors.grey[300],
+                                        child: Text(
+                                          result['HBAg'] ?? '',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        color: Colors.grey[300],
+                                        child: Center(
+                                          child: Text(
+                                            result['HIV'] ?? '',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    
+                                  ],
+                                ),
+                            ],
+                          ),
+                          SizedBox(height: 15,),
+                           Table(
                         columnWidths: const {
                           0: FlexColumnWidth(2),
                           1: FlexColumnWidth(2),
+                          2:FlexColumnWidth(2)
                         },
                         children: [
                           // Table headings
@@ -153,7 +266,7 @@ final jsonData = json.decode(response.body);
                                   color: Colors.red,
                                   child: Center(
                                     child: Text(
-                                      'HCV',
+                                      'Weight',
                                       style: TextStyle(color: Colors.white, fontSize: 16),
                                     ),
                                   ),
@@ -165,7 +278,7 @@ final jsonData = json.decode(response.body);
                                   color: Colors.red,
                                   child: Center(
                                     child: Text(
-                                      'HBAg',
+                                      'bp_up',
                                       style: TextStyle(color: Colors.white, fontSize: 16),
                                     ),
                                   ),
@@ -177,7 +290,7 @@ final jsonData = json.decode(response.body);
                                   color: Colors.red,
                                   child: Center(
                                     child: Text(
-                                      'HIV',
+                                      'bp_down',
                                       style: TextStyle(color: Colors.white, fontSize: 16),
                                     ),
                                   ),
@@ -195,7 +308,7 @@ final jsonData = json.decode(response.body);
                                     padding: const EdgeInsets.all(8.0),
                                     color: Colors.grey[300],
                                     child: Text(
-                                      result['HCV'] ?? 'N/A',
+                                      result['weight']?.toString() ?? '',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
@@ -208,10 +321,10 @@ final jsonData = json.decode(response.body);
                                     padding: const EdgeInsets.all(8.0),
                                     color: Colors.grey[300],
                                     child: Text(
-                                      result['HBAg'] ?? 'N/A',
+                                      result['bp_up']?.toString() ?? '',
                                       style: TextStyle(
                                         color: Colors.black,
-                                          fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
@@ -222,7 +335,7 @@ final jsonData = json.decode(response.body);
                                     color: Colors.grey[300],
                                     child: Center(
                                       child: Text(
-                                        result['HIV'] ?? 'N/A',
+                                        result['bp_down']?.toString() ?? '',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
@@ -236,310 +349,221 @@ final jsonData = json.decode(response.body);
                             ),
                         ],
                       ),
-                      SizedBox(height: 15,),
-                       Table(
-                    columnWidths: const {
-                      0: FlexColumnWidth(2),
-                      1: FlexColumnWidth(2),
-                      2:FlexColumnWidth(2)
-                    },
-                    children: [
-                      // Table headings
-                      TableRow(
+                        SizedBox(height: 15,),
+                           Table(
+                        columnWidths: const {
+                          0: FlexColumnWidth(2),
+                          1: FlexColumnWidth(2),
+                          2:FlexColumnWidth(2)
+                        },
                         children: [
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'Weight',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'bp_up',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'bp_down',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                         
-                        ],
-                      ),
-                      // Display the test results in each row
-                      for (final result in _results)
-                        TableRow(
-                          children: [
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Text(
-                                  result['weight']?.toString() ?? 'N/A',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Text(
-                                  result['bp_up']?.toString() ?? 'N/A',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Center(
-                                  child: Text(
-                                    result['bp_down']?.toString() ?? 'N/A',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                          // Table headings
+                          TableRow(
+                            children: [
+                              TableCell(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.red,
+                                  child: Center(
+                                    child: Text(
+                                      'hb',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            
-                          ],
-                        ),
-                    ],
-                  ),
-                    SizedBox(height: 15,),
-                       Table(
-                    columnWidths: const {
-                      0: FlexColumnWidth(2),
-                      1: FlexColumnWidth(2),
-                      2:FlexColumnWidth(2)
-                    },
-                    children: [
-                      // Table headings
-                      TableRow(
-                        children: [
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'hb',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'HCV_elisa',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'HBsAg_elisa',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                         
-                        ],
-                      ),
-                      // Display the test results in each row
-                      for (final result in _results)
-                        TableRow(
-                          children: [
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Text(
-                                  result['hb']?.toString() ?? 'N/A',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Text(
-                                  result['HCV_elisa']?.toString() ?? 'N/A',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Center(
-                                  child: Text(
-                                    result['HBsAg_elisa']?.toString() ?? 'N/A',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                              TableCell(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.red,
+                                  child: Center(
+                                    child: Text(
+                                      'HCV_elisa',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            
-                          ],
-                        ),
-                    ],
-                  ),
-                   SizedBox(height: 15,),
-                       Table(
-                    columnWidths: const {
-                      0: FlexColumnWidth(1.5),
-                      1: FlexColumnWidth(2),
-                      2:FlexColumnWidth(1.5)
-                    },
-                    children: [
-                      // Table headings
-                      TableRow(
-                        children: [
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'HIV_elisa',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'Observation',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              color: Colors.red,
-                              child: Center(
-                                child: Text(
-                                  'Date',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                         
-                        ],
-                      ),
-                      // Display the test results in each row
-                      for (final result in _results)
-                        TableRow(
-                          children: [
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Text(
-                                  result['HIV_elisa']?.toString() ?? 'N/A',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Text(
-                                  result['observation']?.toString() ?? 'N/A',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Center(
-                                  child: Text(
-                                    formatDateString(result['date'] ?? ''),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                              TableCell(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.red,
+                                  child: Center(
+                                    child: Text(
+                                      'HBsAg_elisa',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
                                     ),
                                   ),
                                 ),
                               ),
+                             
+                            ],
+                          ),
+                          // Display the test results in each row
+                          for (final result in _results)
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: Colors.grey[300],
+                                    child: Text(
+                                      result['hb']?.toString() ?? '',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: Colors.grey[300],
+                                    child: Text(
+                                      result['HCV_elisa']?.toString() ?? '',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: Colors.grey[300],
+                                    child: Center(
+                                      child: Text(
+                                        result['HBsAg_elisa']?.toString() ?? '',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                
+                              ],
                             ),
-                            
-                          ],
-                        ),
-                    ],
-                  ), ],
-                  ),
-                ),
-          ],
+                        ],
+                      ),
+                       SizedBox(height: 15,),
+                           Table(
+                        columnWidths: const {
+                          0: FlexColumnWidth(1.5),
+                          1: FlexColumnWidth(2),
+                          2:FlexColumnWidth(1.5)
+                        },
+                        children: [
+                          // Table headings
+                          TableRow(
+                            children: [
+                              TableCell(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.red,
+                                  child: Center(
+                                    child: Text(
+                                      'HIV_elisa',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.red,
+                                  child: Center(
+                                    child: Text(
+                                      'Observation',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.red,
+                                  child: Center(
+                                    child: Text(
+                                      'Date',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                             
+                            ],
+                          ),
+                          // Display the test results in each row
+                          for (final result in _results)
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: Colors.grey[300],
+                                    child: Text(
+                                      result['HIV_elisa']?.toString() ?? '',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: Colors.grey[300],
+                                    child: Text(
+                                      result['observation']?.toString() ?? '',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: Colors.grey[300],
+                                    child: Center(
+                                      child: Text(
+                                        formatDateString(result['date'] ?? ''),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                
+                              ],
+                            ),
+                        ],
+                      ), ],
+                      ),
+                    ),
+              ],
         ),
+            if (_isLoading)
+        Container(
+          color: Colors.white.withOpacity(0.8),
+          child: Center(
+            child: SpinKitCircle(
+              color: Colors.red,
+              size: 30.0,
+            ),
+          ),
+        ), ],
+          ),
       )));
   
   }
