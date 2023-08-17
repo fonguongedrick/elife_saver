@@ -80,7 +80,7 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
       ),
     );
   }
-  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', 'None'];
+  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', ];
   String selectedBloodGroup = 'A+';
   final List<String> rhFactors = ['Positive', 'Negative'];
   String selectedRhFactor = 'Positive';

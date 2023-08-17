@@ -100,6 +100,18 @@ class _PatientDashboardState extends State<PatientDashboard> {
       );
     }
   }
+  void logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Clear the login state and user information from SharedPreferences
+    await prefs.clear();
+
+    // Navigate the user back to the login page
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,47 +237,50 @@ class _PatientDashboardState extends State<PatientDashboard> {
                   );
                 },
               ),
-              SizedBox(height: 110,),
+              SizedBox(height: 190,),
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: ListTile(
-                  title: Row(
-                    children: [
-                      Icon(Icons.logout, color: Colors.red),
-                      SizedBox(width: 10),
-                      Text('Logout'),
-                    ],
-                  ),
-                  onTap: () {
-                    
-                     showDialog(
-                context: context,
-                barrierDismissible: false, // Prevent dialog dismissal on tap outside
-                builder: (BuildContext context) {
-                  return Dialog(
-                    child: Container(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SpinKitCircle(
-                            color: Colors.red,
-                            size: 50.0,
-                          ),
-                          SizedBox(height: 16.0),
-                          Text(
-                            'making appeal...',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-                    logoutUser(context);
-                  },
+  title: Row(
+    children: [
+      Icon(Icons.logout, color: Colors.red),
+      SizedBox(width: 10),
+      Text('Logout'),
+    ],
+  ),
+  onTap: () {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dialog dismissal on tap outside
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SpinKitCircle(
+                  color: Colors.red,
+                  size: 50.0,
                 ),
+                SizedBox(height: 16.0),
+                Text(
+                  'Logging out...',
+                  style: TextStyle(fontSize: 16.0),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    Future.delayed(Duration(seconds: 3), () {
+      logout(context);
+      Navigator.pop(context); // Close the dialog
+    });
+  },
+),
               ),
             ],
           ),

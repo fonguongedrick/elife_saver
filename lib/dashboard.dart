@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Dashboard extends StatefulWidget {
  final int userId;
@@ -151,7 +151,18 @@ void initState() {
   super.initState();
   _fetchDonationsData();
 }
+ void logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Clear the login state and user information from SharedPreferences
+    await prefs.clear();
 
+    // Navigate the user back to the login page
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (route) => false,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -369,38 +380,55 @@ ListTile(
           city: widget.city,
           password: widget.password,
           btsNumber: widget.btsNumber,
-          email: widget.email,)),
+          email: widget.email,
+        )),
     );
   },
 ),
 SizedBox(height: 120,),
 Padding(
   padding: const EdgeInsets.all(18.0),
-  child:   ListTile(
-  
-    title: Row(
-  
-      children: [
-  
-        Icon(Icons.logout, color: Colors.red),
-  
-        SizedBox(width: 10),
-  
-        TextButton(onPressed: (){
-           logoutUser(context); 
-        }, child: Text('Logout',
-        style: TextStyle(color:Colors.black)))
-  
-      ],
-  
-    ),
-  
-    onTap: () {
-  
-     
-    },
-  
+  child: ListTile(
+  title: Row(
+    children: [
+      Icon(Icons.logout, color: Colors.red),
+      SizedBox(width: 10),
+      Text('Logout'),
+    ],
   ),
+  onTap: () {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dialog dismissal on tap outside
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SpinKitCircle(
+                  color: Colors.red,
+                  size: 50.0,
+                ),
+                SizedBox(height: 16.0),
+                Text(
+                  'Logging out...',
+                  style: TextStyle(fontSize: 16.0),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    Future.delayed(Duration(seconds: 3), () {
+      logout(context);
+      Navigator.pop(context); // Close the dialog
+    });
+  },
+),
 ),
             
             ],
@@ -410,85 +438,144 @@ Padding(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
     
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-               Align(
-                alignment: Alignment.centerRight,
-                 child: Column(
-                        children: [
-                          Text(
-                 '${_credits ?? '0'}',
-                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                            ),
-                          Text(
-                            'Credits',
-                            style: TextStyle(fontSize: 16.0),
-                            
-                          ),
-                        ]),
-               ),
-                Row(
-                  children: [
-                    Text('Hello'),
-                SizedBox(width:6),
-                Text('${widget.userName}',style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold))
-                  ],
-                ),
-                SizedBox(height:8),
-                Row(
-                  children: [
-                    Text('Bts Number : '),
-                SizedBox(width:6),
-                Text('${widget.btsNumber}', style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold),)
-                    
-                  ],
-                ),
-                
-                        SizedBox(height: 30,),
-                
-                        Container(
-  height: 140,
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(8.0),
-    border: Border.all(color: Colors.red, width: 6.0),
-  ),
-  width: 350,
-  padding: const EdgeInsets.all(8.0),
-  child: Column(
-    children: [
-      Align(
-        alignment: Alignment.topLeft,
-        child: Text(
-          'Last Donations',
-          style: TextStyle(fontSize: 16.0, color: Colors.red),
-        ),
-      ),
-      SizedBox(height: 20),
-
-      Text(
-        _lastDonationDate.isNotEmpty ? _lastDonationDate : 'No Donation yet',
-        style: TextStyle(fontSize: 19.0),
-      ),
-      SizedBox(height: 5),
-      
-      Container(
-        height: 40,
-        width: 240,
-        padding: EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: TextButton(
-          onPressed: () {
-           showDialog(
+          child: Column(
+            children: [
+             Align(
+              alignment: Alignment.centerRight,
+               child: Column(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                           showDialog(
               context: context,
               builder: (BuildContext context) {
                 return Center(
                   child: AlertDialog(
                     contentPadding: EdgeInsets.all(16.0),
                     content: Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(left:12),
+                        height: 250,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.cancel),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                Icons.notification_important,
+                                size: 40,
+                                color: Colors.red,
+                              ),
+                              SizedBox(height: 16),
+                              Expanded(
+                                child: Text(
+                                  'Get credits for accepting blood request and donating.',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  'Your credits can be used to subsidize medical expenses or redeemed to gifts',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                                       
+                               Text('Elifesaver',
+                                 style: TextStyle(fontWeight: FontWeight.bold),),       ],
+                                                    ),
+                        ),
+                      ),
+                    ),
+                                            ));
+                                          },
+                                        ); 
+                          },
+                          child: Text(
+                                         '${_credits ?? '0'}',
+                                         style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color:Colors.red),
+                            ),
+                        ),
+                        Text(
+                          'Credits',
+                          style: TextStyle(fontSize: 16.0),
+                          
+                        ),
+                      ]),
+             ),
+              Row(
+                children: [
+                  Text('Hello'),
+              SizedBox(width:6),
+              Text('${widget.userName}',style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold))
+                ],
+              ),
+              SizedBox(height:8),
+              Row(
+                children: [
+                  Text('Bts Number : '),
+              SizedBox(width:6),
+              Text('${widget.btsNumber}', style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold),)
+                  
+                ],
+              ),
+              
+                      SizedBox(height: 30,),
+              
+                      Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(color: Colors.red, width: 6.0),
+                      ),
+                      width: 350,
+                      height: 150,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Last Donation',
+                              style: TextStyle(fontSize: 16.0, color: Colors.red),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                      
+                          Text(
+                            _lastDonationDate.isNotEmpty ? _lastDonationDate : 'No Donation yet',
+                            style: TextStyle(fontSize: 19.0),
+                          ),
+                          SizedBox(height: 5),
+                          
+                          Expanded(
+                            child: Container(
+                              
+                              width: 240,
+                              padding: EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: TextButton(
+                              onPressed: () {
+                               showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Center(
+                                      child: AlertDialog(
+                                        contentPadding: EdgeInsets.all(16.0),
+                                        content: Expanded(
                       child: Container(
                         height: 250,
                         child: Column(
@@ -547,20 +634,21 @@ Padding(
                                style: TextStyle(fontWeight: FontWeight.bold),),       ],
                                                   ),
                       ),
-                    ),
+                                        ),
                                             ));
                                           },
                                         ); // ...
-          },
-          child: Text(
-            'Learn more',
-            style: TextStyle(fontSize: 16.0, color: Colors.black),
-          ),
-        ),
-      ),
-    ],
-  ),
-),
+                              },
+                              child: Text(
+                                'Learn more',
+                                style: TextStyle(fontSize: 16.0, color: Colors.black),
+                              ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      ),
     SizedBox(height: 30,),
 // ...
 
@@ -577,7 +665,7 @@ Padding(
       Align(
         alignment: Alignment.topLeft,
         child: Text(
-          'Next Donations',
+          'Next Donation',
           style: TextStyle(fontSize: 16.0, color: Colors.red),
         ),
       ),
@@ -589,15 +677,15 @@ Padding(
       ),
       SizedBox(height: 5),
       
-      Container(
-        height: 40,
-        width: 240,
-        padding: EdgeInsets.all(2),
-        decoration: BoxDecoration(
+      Expanded(
+        child: Container(
+          width: 240,
+          padding: EdgeInsets.all(2),
+          decoration: BoxDecoration(
           color: Colors.red,
           borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: TextButton(
+          ),
+          child: TextButton(
           onPressed: () {
            showDialog(
               context: context,
@@ -648,37 +736,37 @@ Padding(
             'Learn more',
             style: TextStyle(fontSize: 16.0, color: Colors.black),
           ),
+          ),
         ),
       ),
     ],
   ),
 ),
-                        SizedBox(height: 30,),
-                        Container(
-                          height: 100,
-                          width: 350,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(color: Colors.red, width: 6.0),
-                          ),
-                          child: Center(
-                            child: TextButton(
-                              onPressed: (){
-                                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ResultPage(btsNumber:widget.btsNumber)),
-              );
-                              },
-                              child: Text(
-                                'Results',
-                                style: TextStyle(fontSize: 19.0, color: Colors.black),
-                              ),
+                      SizedBox(height: 30,),
+                      Container(
+                        height: 100,
+                        width: 350,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(color: Colors.red, width: 6.0),
+                        ),
+                        child: Center(
+                          child: TextButton(
+                            onPressed: (){
+                               Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ResultPage(btsNumber:widget.btsNumber)),
+            );
+                            },
+                            child: Text(
+                              'Results',
+                              style: TextStyle(fontSize: 19.0, color: Colors.black),
                             ),
                           ),
                         ),
-                      ],
-                    ),
-          ),
+                      ),
+                    ],
+                  ),
         ),
               ),
             

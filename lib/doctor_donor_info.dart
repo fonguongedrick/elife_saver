@@ -7,13 +7,15 @@ class DonorInfoPage extends StatefulWidget {
 class _DonorInfoPageState extends State<DonorInfoPage> {
   bool isMaleActive = true;
   String? userName;
+   
+
 
   void toggleGender(bool isMale) {
     setState(() {
       isMaleActive = isMale;
     });
   }
-
+   
  
   @override
   Widget build(BuildContext context) {

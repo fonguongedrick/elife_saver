@@ -44,7 +44,7 @@ class MakeAppealPage extends StatefulWidget {
 }
 
 class _MakeAppealPageState extends State<MakeAppealPage> {
-  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', 'None'];
+  final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', ];
   String selectedBloodGroup = 'A+';
   final List<String> rhFactors = ['Positive', 'Negative'];
   String selectedRhFactor = 'Positive';

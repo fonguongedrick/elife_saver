@@ -23,115 +23,136 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   bool _isLoading = false; // New variable to track loading state
   bool _showLoadingDialog = false;
-  Future<void> _authenticate(String email, String password) async {
-    setState(() {
-      _isLoading = true;
-      _showLoadingDialog = true;
-    });
-    
+   Future<void> _authenticate(String email, String password) async {
+  setState(() {
+    _isLoading = true;
+    _showLoadingDialog = true;
+  });
 
-    final response = await http.post(
-      Uri.parse('https://elifesaver.online/includes/login.inc.php'),
-      body: {
-        'email': email,
-        'password': password,
-      },
-    );
+  final response = await http.post(
+    Uri.parse('https://elifesaver.online/includes/login.inc.php'),
+    body: {
+      'email': email,
+      'password': password,
+    },
+  );
 
-    setState(() {
-      _isLoading = false; 
-      _showLoadingDialog = false;// Hide progress indicator
-    });
+  setState(() {
+    _isLoading = false;
+    _showLoadingDialog = false; // Hide progress indicator
+  });
 
-    final jsonData = jsonDecode(response.body);
-    if (jsonData['success'] == true) {
-      final userType = jsonData['type'];
-      final user = jsonData['user'];
-      final userName = user[userType + '_name'];
-      final int userId = user['id'];
-      final btsNumber = user['bts_number'];
-      final phoneNumber = user['phone'];
-      final city = user['city'];
-      final address = user['address'];
-      final email = user['email'];
-      final password = user['password'];
-      final bloodGroup = user['blood_group'];
-      final gender = user['gender'];
-      print(user);
-      print(userType);
-      // Authentication was successful
-      if (userType == 'patient') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PatientDashboard(
-              userId: userId,
-              userName: userName,
-              userType: userType,
-            ),
+  final jsonData = jsonDecode(response.body);
+  if (jsonData['success'] == true) {
+    final userType = jsonData['type'];
+    final user = jsonData['user'];
+    final userName = user[userType + '_name'];
+    final int userId = user['id'];
+    final btsNumber = user['bts_number'];
+    final phoneNumber = user['phone'];
+    final city = user['city'];
+    final address = user['address'];
+    final userEmail = user['email'];
+    final userPassword = user['password'];
+    final bloodGroup = user['blood_group'];
+    final gender = user['gender'];
+    print(user);
+    print(userType);
+
+    // After the user successfully logs in
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool('LoggedIn', true);
+    await prefs.setString('userType', userType);
+    await prefs.setInt('userId', userId);
+    await prefs.setString('userName', userName);
+    await prefs.setString('phoneNumber', phoneNumber.toString());
+    await prefs.setString('address', address.toString());
+    await prefs.setString('city', city.toString());
+    await prefs.setString('password', userPassword.toString());
+    await prefs.setString('btsNumber', btsNumber.toString());
+    await prefs.setString('email', userEmail.toString());
+    await prefs.setString('bloodGroup', bloodGroup.toString());
+    await prefs.setString('gender', gender.toString());
+
+    // Authentication was successful
+    if (userType == 'patient') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PatientDashboard(
+            userId: userId,
+            userName: userName,
+            userType: userType,
           ),
-        );
-      } else if (userType == 'donor') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Dashboard(
-              userId: userId,
-              userName: userName,
-              userType: userType,
-              phoneNumber: phoneNumber,
-              address: address,
-              city: city,
-              password: password,
-              btsNumber: btsNumber,
-              email: email,
-              bloodGroup: bloodGroup,
-              gender:gender,
-            ),
+        ),
+      );
+    } else if (userType == 'donor') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Dashboard(
+            userId: userId,
+            userName: userName,
+            userType: userType,
+            phoneNumber: phoneNumber.toString(),
+            address: address.toString(),
+            city: city.toString(),
+            password: userPassword.toString(),
+            btsNumber: btsNumber.toString(),
+            email: userEmail.toString(),
+            bloodGroup: bloodGroup.toString(),
+            gender: gender.toString(),
           ),
-        );
-      } 
+        ),
+      );
     }
-    else if (jsonData['success'] == false) {
-       if (jsonData['error']== 'Wrong Password'){ // Authentication failed
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Login failed'),
-              content: Text('Invalid email or password'),
-              actions: [
-                TextButton(
-                  onPressed: () { Navigator.pop(context);
-                  Navigator.pop(context);},
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );}
-        else {
-          showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Login failed'),
-              content: Text('Fill all the fields'),
-              actions: [
-                TextButton(
-                  onPressed: () { Navigator.pop(context);
-                  Navigator.pop(context);},
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-        }
-
-      }
-      
+  } else if (jsonData['success'] == false) {
+    if (jsonData['error'] == 'Wrong Password') {
+      // Authentication failed due to wrong password
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Login failed'),
+            content: Text('Invalid email or password'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Authentication failed due to missing fields
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Login failed'),
+            content: Text('Fill all the fields'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
+
+   }
+  
   
 
   @override
@@ -285,7 +306,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           SizedBox(height: 16.0),
                           Text(
-                            'Loading...',
+                            'Logging in...',
                             style: TextStyle(fontSize: 16.0),
                           ),
                         ],
@@ -311,7 +332,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
 ),
           SizedBox(
-                    height: 180,
+                    height: 140,
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -326,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(builder: (context) => PatientRegisterPage()),
                               );
@@ -339,7 +360,7 @@ class _LoginPageState extends State<LoginPage> {
                           TextButton(
                             onPressed: () {
         // After successful login, navigate to the DonorDashboard and pass the userId and userType
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
         builder: (context) => DonorInfoPage(),

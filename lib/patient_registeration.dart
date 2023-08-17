@@ -62,13 +62,18 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
       if (jsonData['success'] == true) {
         final userType = jsonData['type'];
         final user = jsonData['user'];
-        userId = user['id'];
+        final userId = user['id'];
         final userName = user[userType + '_name'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setBool('registered', true);
-        prefs.setInt('userId', userId!);
-        prefs.setString('userName', userName);
+       SharedPreferences prefs = await SharedPreferences.getInstance();
 
+   await prefs.setBool('LoggedIn', true);
+  await prefs.setString('userType', userType);
+  await prefs.setInt('userId', userId);
+  await prefs.setString('userName', userName);
+  await prefs.setString('phoneNumber', phoneNumber);
+  await prefs.setString('password', password);
+  await prefs.setString('email', email);
+      
         print(userName);
         print(jsonData['error']);
         // Registration was successful

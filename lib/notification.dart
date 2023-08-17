@@ -135,38 +135,141 @@ class _NotificationPageState extends State<NotificationPage> {
                   final status = bloodAppeal['status'];
 
                   return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: Colors.grey[200],
-                      ),
-                      child: Row(
-                        children: [
-                          
-                          SizedBox(height: 8),
-                          Expanded(
-                            child: Text(
-                              '$numberOfBags bags of $bloodGroup needed at $healthFacility',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 46),
-                          Expanded(
-                            child: Text(
-                              '${creationDate.day}/${creationDate.month}/${creationDate.year} ${creationDate.hour}:${creationDate.minute} status: $status',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+  padding: const EdgeInsets.all(8.0),
+  child: GestureDetector(
+    onTap: () {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.all(16.0),
+            content: Container(
+              height: 350,
+              width: 420,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left:100.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Icon(
+                                            Icons.notification_important,
+                                            size: 40,
+                                            color: Colors.red,
+                                          ),
+                        ),
+                        SizedBox(width: 16,),
+                        IconButton(
+                          icon: Icon(Icons.cancel),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                     
+                      ],
                     ),
-                  );
+                  ),
+                  
+                  SizedBox(height: 46),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '$numberOfBags bags of $bloodGroup needed at $healthFacility',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 46),
+                      Expanded(
+                        child: Text(
+                          '${creationDate.day}/${creationDate.month}/${creationDate.year} ${creationDate.hour}:${creationDate.minute} status: $status',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'SAVE A LIFE',
+                    style: TextStyle(color: Colors.red, fontSize: 30),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 35,
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Expanded(child: Text('Donate Blood', style: TextStyle(color: Colors.white),)),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Container(
+                        height: 35,
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Text('Donate xaf',  style: TextStyle(color: Colors.white),),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+    child: Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.grey[200],
+      ),
+      child: Row(
+        children: [
+          SizedBox(height: 8),
+          Expanded(
+            child: Text(
+              '$numberOfBags bags of $bloodGroup needed at $healthFacility',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(width: 46),
+          Expanded(
+            child: Text(
+              '${creationDate.day}/${creationDate.month}/${creationDate.year} ${creationDate.hour}:${creationDate.minute} status: $status',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
                 },
               ),
             ),

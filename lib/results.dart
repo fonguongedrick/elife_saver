@@ -127,7 +127,6 @@ final jsonData = json.decode(response.body);
                       Column(
                         children: [
                           Text('Last Date of Test '),
-                              for (final result in _results)
                           for (final result in _results)
   Text(formatDateString(result['date'] ?? ''), style: TextStyle(fontWeight: FontWeight.bold),),
                         ],

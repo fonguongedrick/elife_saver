@@ -15,8 +15,20 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
   bool isMaleActive = true;
   DateTime? selectedDate;
   String bloodGroupValue = 'Select Blood Group';
-  String factorValue = 'Select Your city';
-
+  String cityValue = 'Select Your city';
+    String selectedHospital = ''; // Define selectedHospital variable
+  List<String> cityNames = [];
+   // Define correctOldPassword variable
+  @override
+  void initState() {
+    super.initState();
+    
+   _fetchResults().then((_) {
+      setState(() {
+        selectedHospital = cityNames.isNotEmpty ? cityNames[0] : '';
+      });
+    }); // Initialize the old password controller
+}
   void toggleGender(bool isMale) {
     setState(() {
       isMaleActive = isMale;
@@ -116,7 +128,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
     final Email = user['email'];
     final Password = user['password'];
      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool('registered', true);
+      prefs.setBool('LoggedIn', true);
       prefs.setInt('userId', userId);
       prefs.setString('userName', userName);
       prefs.setString('userType', userType);
@@ -126,7 +138,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
       prefs.setString('password', Password);
       prefs.setString('btsNumber', btsnumber);
       prefs.setString('email', Email);
-
+      
     print(user);
     print(jsonData);
   // Check if the response is successful
@@ -170,6 +182,39 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
     }
   
   }
+  Future<void> _fetchResults() async {
+    setState(() {
+      _isLoading = true; 
+      // Hide progress indicator
+    });
+     try {
+      
+      // Check if btsNumber is null and provide a default value (an empty string)
+      final url = Uri.parse('https://elifesaver.online/includes/get_all_cities.inc.php');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      );
+         setState(() {
+      _isLoading = false; 
+      // Hide progress indicator
+    });
+        final jsonData = json.decode(response.body);
+        print(jsonData['success']);
+        print(jsonData);
+        if (jsonData['success'] == true) {
+          final List<dynamic> facilities = jsonData['cities'];
+          setState(() {
+            cityNames = facilities.map((facility) => facility['city_name'] as String).toList();
+          });
+        }
+     }catch (error) {
+      print('Error during API call: $error');
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -278,35 +323,26 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
       ),
     ],
   ),
-  child: DropdownButton<String>(
-    value: factorValue,
-    iconSize: 24,
-    elevation: 16,
-    underline: Container(
-          height: 2,
-          color: Colors.white,
-        ),
-    onChanged: (String? newValue) {
-      setState(() {
-        factorValue = newValue!;
-        print(factorValue);
-      });
-    },
-    items: <String>[
-      'Select Your city',
-      'Bamenda',
-      'Limbe',
-      'Buea',
-      'Bafoussam'
-    ].map<DropdownMenuItem<String>>((String value) {
-      return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value),
-        
-      );
-    }).toList(),
-  ),
-),
+  child:  _isLoading
+                    ? SpinKitFadingCircle(
+        color: Colors.black, // Choose your desired color
+        size: 30.0, // Choose your desired size
+      )
+                : DropdownButton<String>(
+        value: selectedHospital,
+        hint: Text('Select a city'),
+        onChanged: (String? value) {
+          setState(() {
+            cityValue = value!;
+          });
+        },
+        items: cityNames.map((name) {
+          return DropdownMenuItem<String>(
+            value: name,
+            child: Text(name),
+          );
+        }).toList(),
+      ),),
               // Address TextField
               SizedBox(height: 16),
               Container(
