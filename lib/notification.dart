@@ -180,18 +180,14 @@ class _NotificationPageState extends State<NotificationPage> {
                       Expanded(
                         child: Text(
                           '$numberOfBags bags of $bloodGroup needed at $healthFacility',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          
                         ),
                       ),
                       SizedBox(width: 46),
                       Expanded(
                         child: Text(
                           '${creationDate.day}/${creationDate.month}/${creationDate.year} ${creationDate.hour}:${creationDate.minute} status: $status',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                         
                         ),
                       ),
                     ],
@@ -219,6 +215,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       ),
                       SizedBox(width: 8),
                       Container(
+                        width:100,
                         height: 35,
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -251,18 +248,14 @@ class _NotificationPageState extends State<NotificationPage> {
           Expanded(
             child: Text(
               '$numberOfBags bags of $bloodGroup needed at $healthFacility',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              
             ),
           ),
           SizedBox(width: 46),
           Expanded(
             child: Text(
               '${creationDate.day}/${creationDate.month}/${creationDate.year} ${creationDate.hour}:${creationDate.minute} status: $status',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              
             ),
           ),
         ],

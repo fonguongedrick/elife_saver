@@ -166,7 +166,7 @@ class _PatientRegisterPageState extends State<PatientRegisterPage> {
     ),
   ),
 ),
-const SizedBox(height: 20),
+const SizedBox(height: 30),
 Container(
   decoration: BoxDecoration(
     color: Colors.white,
@@ -190,7 +190,7 @@ Container(
     ),
   ),
 ),
-const SizedBox(height: 20),
+const SizedBox(height: 30),
 Container(
   decoration: BoxDecoration(
     color: Colors.white,
@@ -214,7 +214,7 @@ Container(
     ),
   ),
 ),
-const SizedBox(height: 20),
+const SizedBox(height: 30),
  Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -249,7 +249,7 @@ const SizedBox(height: 20),
                 obscureText: !_passwordVisible,
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 30),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -284,9 +284,8 @@ const SizedBox(height: 20),
                 obscureText: !_confirmPasswordVisible,
               ),
             ),
-              const SizedBox(height: 20),
               
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
            Container(
   child: Container(
           width: 350,

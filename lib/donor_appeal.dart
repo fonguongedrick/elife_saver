@@ -84,7 +84,7 @@ class _DonorAppealPageState extends State<DonorAppealPage> {
   String selectedBloodGroup = 'A+';
   final List<String> rhFactors = ['Positive', 'Negative'];
   String selectedRhFactor = 'Positive';
-  int numberOfBags = 2;
+  int numberOfBags = 1;
   int? patientId = null ;
   
   int max(int a, int b) {
@@ -188,16 +188,19 @@ setState(() {
                         ),
                       ],
                     ),
-                    height: 40,
+                    height: 60,
                     padding: EdgeInsets.all(8),
-                    child: Text(
-                      'Number of Bags',
+                    child: Center(
+                      child: Text(
+                        'Number of Bags',
+                      ),
                     ),
                   ),
                   SizedBox(width: 8,),
                   Container(
-                    height: 40,
-                    padding: EdgeInsets.only(left: 4, right:4),
+                    height: 60,
+                    
+                    padding: EdgeInsets.only(left:4, right:4),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -209,6 +212,7 @@ setState(() {
                       ],
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         InkWell(
                           onTap: () {
@@ -218,13 +222,13 @@ setState(() {
                           },
                           child: Text(
                             '-',
-                            style: TextStyle(fontSize: 30.0),
+                            style: TextStyle(fontSize: 50.0),
                           ),
                         ),
                         SizedBox(width: 16.0),
                         Text(
                           numberOfBags.toString(),
-                          style: TextStyle(fontSize: 16.0),
+                          style: TextStyle(fontSize: 30.0),
                         ),
                         SizedBox(width: 16.0),
                         InkWell(
@@ -235,7 +239,7 @@ setState(() {
                           },
                           child: Text(
                             '+',
-                            style: TextStyle(fontSize: 20.0),
+                            style: TextStyle(fontSize: 35.0),
                           ),
                         ),
                       ],
@@ -245,7 +249,7 @@ setState(() {
               ),
               SizedBox(height: 16.0),
               Container(
-                height: 40,
+                height: 60,
                 padding: EdgeInsets.only(left: 4),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -272,7 +276,7 @@ setState(() {
                     ),
                     SizedBox(height: 8),
                     Container(
-                      height: 40,
+                      height: 60,
                       padding: EdgeInsets.only(left: 4),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -310,8 +314,8 @@ setState(() {
               
               SizedBox(height: 16.0),
               Container(
-                height: 40,
-                padding: EdgeInsets.only(left: 4),
+                height: 60,
+                padding: EdgeInsets.only(left: 10),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -343,7 +347,7 @@ setState(() {
         }).toList(),
       ),
     ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 32.0),
               Container(
                 height: 80,
                 padding: EdgeInsets.only(left: 4),
@@ -359,7 +363,7 @@ setState(() {
                     ),
                 child: TextField(
                   controller: medicalInformationController,
-                  maxLines: 3,
+                  maxLines: 1,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.all(12.0),

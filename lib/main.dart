@@ -262,41 +262,38 @@ class FirstScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(height: 30),
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: () {
-                  // Go to the login page.
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
-                },
-                child: Text(
-                  'Skip',
-                  style: TextStyle(color: Colors.red, fontSize: 24),
-                ),
+      body: Column(
+        children: [
+          SizedBox(height: 60),
+          Align(
+            alignment: Alignment.topRight,
+            child: TextButton(
+              onPressed: () {
+                // Go to the login page.
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              child: Text(
+                'Skip',
+                style: TextStyle(color: Colors.red,),
               ),
             ),
-            SizedBox(height: 60),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('assets/e_life_saver.png'),
-                Text(
-                  'WELCOME',
-                  style: TextStyle(fontSize: 24),
-                ),
-                SizedBox(height: 80),
-              ],
-            ),
-          ],
-        ),
+          ),
+          SizedBox(height: 100),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/e_life_saver.png', height:250, width:250,),
+              Text(
+                'WELCOME',
+                style: TextStyle(fontSize: 24),
+              ),
+              SizedBox(height: 80),
+            ],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.arrow_forward),
@@ -325,7 +322,7 @@ class MyFirstScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 30),
+          SizedBox(height: 60),
           Align(
             alignment: Alignment.topRight,
             child: TextButton(
@@ -338,17 +335,18 @@ class MyFirstScreen extends StatelessWidget {
               },
               child: Text(
                 'Skip',
-                style: TextStyle(color: Colors.red, fontSize: 24),
+                style: TextStyle(color: Colors.red, ),
               ),
             ),
           ),
           SizedBox(
-            height: 60,
+            height: 110,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/blood_test.png'),
+              Image.asset('assets/blood_test.png', height:250, width:250,),
+              SizedBox(height:2,),
               Text(
                 'Where Donors and Patients meet',
                 style: TextStyle(fontSize: 15),
@@ -383,8 +381,8 @@ class MySecondScreen extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 100),
-              Image.asset('assets/blood.png'),
+              SizedBox(height: 135),
+              Image.asset('assets/blood.png', height:250, width:250),
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(left: 40.0),
@@ -393,7 +391,7 @@ class MySecondScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 15),
                 ),
               ),
-              SizedBox(height: 160),
+              SizedBox(height: 150),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Container(

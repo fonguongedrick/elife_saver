@@ -237,50 +237,53 @@ class _PatientDashboardState extends State<PatientDashboard> {
                   );
                 },
               ),
-              SizedBox(height: 190,),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: ListTile(
-  title: Row(
-    children: [
-      Icon(Icons.logout, color: Colors.red),
-      SizedBox(width: 10),
-      Text('Logout'),
-    ],
-  ),
-  onTap: () {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent dialog dismissal on tap outside
-      builder: (BuildContext context) {
-        return Dialog(
-          child: Container(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SpinKitCircle(
-                  color: Colors.red,
-                  size: 50.0,
+              SizedBox(height: 240,),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: ListTile(
+                title: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 10),
+                    Text('Logout'),
+                  ],
                 ),
-                SizedBox(height: 16.0),
-                Text(
-                  'Logging out...',
-                  style: TextStyle(fontSize: 16.0),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false, // Prevent dialog dismissal on tap outside
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: Container(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SpinKitCircle(
+                    color: Colors.red,
+                    size: 50.0,
+                  ),
+                  SizedBox(height: 16.0),
+                  Text(
+                    'Logging out...',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+              
+                  Future.delayed(Duration(seconds: 3), () {
+                    logout(context);
+                    Navigator.pop(context); // Close the dialog
+                  });
+                },
+              ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    Future.delayed(Duration(seconds: 3), () {
-      logout(context);
-      Navigator.pop(context); // Close the dialog
-    });
-  },
-),
               ),
             ],
           ),
@@ -345,18 +348,14 @@ class _PatientDashboardState extends State<PatientDashboard> {
                             Expanded(
                               child: Text(
                                 '${appeal['number_of_bags']} bags of ${appeal['blood_group'] ?? 'Unknown Blood Group'} needed at ${appeal['health_facility'] ?? 'Unknown Facility'}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                
                               ),
                             ),
                             SizedBox(width: 38),
                             Expanded(
                               child: Text(
                                 '${appeal['creation_date']} Status: ${appeal['status']}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                
                               ),
                               
                             ),
@@ -387,8 +386,9 @@ class _PatientDashboardState extends State<PatientDashboard> {
               ),
                 SizedBox(height: 16),
                 Container(
+                  width:300,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(10),
                     color: Colors.red,
                   ),
                   child: TextButton(

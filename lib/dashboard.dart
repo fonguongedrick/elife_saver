@@ -385,50 +385,96 @@ ListTile(
     );
   },
 ),
-SizedBox(height: 120,),
+SizedBox(height: 185,),
 Padding(
-  padding: const EdgeInsets.all(18.0),
-  child: ListTile(
-  title: Row(
-    children: [
-      Icon(Icons.logout, color: Colors.red),
-      SizedBox(width: 10),
-      Text('Logout'),
-    ],
-  ),
-  onTap: () {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent dialog dismissal on tap outside
-      builder: (BuildContext context) {
-        return Dialog(
-          child: Container(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SpinKitCircle(
-                  color: Colors.red,
-                  size: 50.0,
-                ),
-                SizedBox(height: 16.0),
-                Text(
-                  'Logging out...',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
 
-    Future.delayed(Duration(seconds: 3), () {
-      logout(context);
-      Navigator.pop(context); // Close the dialog
-    });
-  },
-),
+  padding: const EdgeInsets.only(left:28.0, bottom : 10),
+
+  child: Align(
+    alignment: Alignment.bottomCenter,
+    child: ListTile(
+     titleAlignment: ListTileTitleAlignment.bottom,
+    title: Row(
+  
+      children: [
+  
+        Icon(Icons.logout, color: Colors.red),
+  
+        SizedBox(width: 10),
+  
+        Text('Logout'),
+  
+      ],
+  
+    ),
+  
+    onTap: () {
+  
+      showDialog(
+  
+        context: context,
+  
+        barrierDismissible: false, // Prevent dialog dismissal on tap outside
+  
+        builder: (BuildContext context) {
+  
+          return Dialog(
+  
+            child: Container(
+  
+              padding: EdgeInsets.all(16.0),
+  
+              child: Column(
+  
+                mainAxisSize: MainAxisSize.min,
+  
+                children: [
+  
+                  SpinKitCircle(
+  
+                    color: Colors.red,
+  
+                    size: 50.0,
+  
+                  ),
+  
+                  SizedBox(height: 16.0),
+  
+                  Text(
+  
+                    'Logging out...',
+  
+                    style: TextStyle(fontSize: 16.0),
+  
+                  ),
+  
+                ],
+  
+              ),
+  
+            ),
+  
+          );
+  
+        },
+  
+      );
+  
+  
+  
+      Future.delayed(Duration(seconds: 3), () {
+  
+        logout(context);
+  
+        Navigator.pop(context); // Close the dialog
+  
+      });
+  
+    },
+  
+  ),
+  ),
+
 ),
             
             ],
@@ -438,25 +484,265 @@ Padding(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
     
-          child: Column(
-            children: [
-             Align(
-              alignment: Alignment.centerRight,
-               child: Column(
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                           showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Center(
-                  child: AlertDialog(
-                    contentPadding: EdgeInsets.all(16.0),
-                    content: Expanded(
-                      child: Container(
-                        padding: EdgeInsets.only(left:12),
-                        height: 250,
-                        child: Center(
+          child: Expanded(
+            child: Column(
+              children: [
+               Align(
+                alignment: Alignment.centerRight,
+                 child: Column(
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                             showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Center(
+                    child: AlertDialog(
+                      contentPadding: EdgeInsets.all(16.0),
+                      content: Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left:12),
+                          height: 250,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.cancel),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.notification_important,
+                                  size: 40,
+                                  color: Colors.red,
+                                ),
+                                SizedBox(height: 16),
+                                Expanded(
+                                  child: Text(
+                                    'Get credits for accepting blood request and donating.',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    'Your credits can be used to subsidize medical expenses or redeemed to gifts',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                         
+                                 Text('Elifesaver',
+                                   style: TextStyle(fontWeight: FontWeight.bold),),       ],
+                                                      ),
+                          ),
+                        ),
+                      ),
+                                              ));
+                                            },
+                                          ); 
+                            },
+                            child: Text(
+                                           '${_credits ?? '0'}',
+                                           style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color:Colors.red),
+                              ),
+                          ),
+                          Text(
+                            'Credits',
+                            style: TextStyle(fontSize: 16.0),
+                            
+                          ),
+                        ]),
+               ),
+                Row(
+                  children: [
+                    Text('Hello'),
+                SizedBox(width:6),
+                Text('${widget.userName}',style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold))
+                  ],
+                ),
+                SizedBox(height:8),
+                Row(
+                  children: [
+                    Text('Bts Number : '),
+                SizedBox(width:6),
+                Text('${widget.btsNumber}', style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold),)
+                    
+                  ],
+                ),
+                
+                        SizedBox(height: 30,),
+                
+                        Expanded(
+                          child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Colors.red, width: 1.0),
+                          ),
+                          width: 350,
+                          height: 160,
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'Last Donation',
+                                  style: TextStyle(fontSize: 16.0, color: Colors.red),
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                          
+                              Text(
+                                _lastDonationDate.isNotEmpty ? _lastDonationDate : 'No Donation yet',
+                                style: TextStyle(fontSize: 19.0),
+                              ),
+                              SizedBox(height: 5),
+                              
+                              Container(
+                                
+                                width: 240,
+                                padding: EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: TextButton(
+                                onPressed: () {
+                                 showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Center(
+                                        child: AlertDialog(
+                                          contentPadding: EdgeInsets.all(16.0),
+                                          content: Expanded(
+                          child: Container(
+                            height: 250,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.cancel),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                Icons.notification_important,
+                                size: 40,
+                                color: Colors.red,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'Donate Blood to Gain credits',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(height: 8),
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      
+                                      'Reaction:',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(width: 4,),
+                                    if (_lastDonationDate == '') 
+                                    Expanded(child: Text('You have not perfomed any donation yet.'))
+                                    else
+                                    Text('Your blood was used to save a life.')
+                                  ],
+                                ),
+                              ),
+                               Text('Thank you for choosing Us.') ,
+                               Row(
+                                 children: [
+                                   Text('Type:',
+                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                                    SizedBox(width: 4,),
+                                 
+                                 Expanded(child: Text('voluntary, replacement or appeal.'))
+                                 ],
+                               ),              
+                               Text('Elifesaver',
+                                 style: TextStyle(fontWeight: FontWeight.bold),),       ],
+                                                    ),
+                          ),
+                                          ),
+                                              ));
+                                            },
+                                          ); // ...
+                                },
+                                child: Text(
+                                  'Learn more',
+                                  style: TextStyle(fontSize: 16.0, color: Colors.white),
+                                ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          ),
+                        ),
+              SizedBox(height: 30,),
+          // ...
+          
+           Expanded(
+             child: Container(
+              height: 160,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(color: Colors.red, width: 1.0),
+              ),
+              width: 350,
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+              'Next Donation',
+              style: TextStyle(fontSize: 16.0, color: Colors.red),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                     
+                  Text(
+                    _nextDonationDate.isNotEmpty ? _nextDonationDate : 'No Donation yet',
+                    style: TextStyle(fontSize: 19.0),
+                  ),
+                  SizedBox(height: 5),
+                  
+                  Container(
+                    width: 240,
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: TextButton(
+                    onPressed: () {
+                     showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Center(
+                    child: AlertDialog(
+                      contentPadding: EdgeInsets.all(16.0),
+                      content: Expanded(
+                        child: Container(
+                          height: 220,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
@@ -478,295 +764,59 @@ Padding(
                                 color: Colors.red,
                               ),
                               SizedBox(height: 16),
-                              Expanded(
-                                child: Text(
-                                  'Get credits for accepting blood request and donating.',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  'Your credits can be used to subsidize medical expenses or redeemed to gifts',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                                       
-                               Text('Elifesaver',
-                                 style: TextStyle(fontWeight: FontWeight.bold),),       ],
+                                 if (widget.gender == 'male') 
+                                   Expanded(child: Text('After donating, you need to wait for up to 3 months before you can donate again. see you soon'),)
+                                   else
+                                   Expanded(child: Text('After donating, you need to wait for up to 4 months before you can donate again. see you soon')),
+                                 SizedBox(height: 6,),
+                                 Text('Elifesaver',
+                                 style: TextStyle(fontWeight: FontWeight.bold),),               
+                                                  ],
                                                     ),
                         ),
                       ),
+                                              ));
+                                            },
+                                          ); // ...
+                    },
+                    child: Text(
+              'Learn more',
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
                     ),
-                                            ));
-                                          },
-                                        ); 
-                          },
-                          child: Text(
-                                         '${_credits ?? '0'}',
-                                         style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color:Colors.red),
-                            ),
-                        ),
-                        Text(
-                          'Credits',
-                          style: TextStyle(fontSize: 16.0),
-                          
-                        ),
-                      ]),
-             ),
-              Row(
-                children: [
-                  Text('Hello'),
-              SizedBox(width:6),
-              Text('${widget.userName}',style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold))
-                ],
-              ),
-              SizedBox(height:8),
-              Row(
-                children: [
-                  Text('Bts Number : '),
-              SizedBox(width:6),
-              Text('${widget.btsNumber}', style: TextStyle(color:Colors.red, fontWeight: FontWeight.bold),)
-                  
-                ],
-              ),
-              
-                      SizedBox(height: 30,),
-              
-                      Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: Colors.red, width: 6.0),
-                      ),
-                      width: 350,
-                      height: 150,
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              'Last Donation',
-                              style: TextStyle(fontSize: 16.0, color: Colors.red),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                      
-                          Text(
-                            _lastDonationDate.isNotEmpty ? _lastDonationDate : 'No Donation yet',
-                            style: TextStyle(fontSize: 19.0),
-                          ),
-                          SizedBox(height: 5),
-                          
-                          Expanded(
-                            child: Container(
-                              
-                              width: 240,
-                              padding: EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: TextButton(
-                              onPressed: () {
-                               showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Center(
-                                      child: AlertDialog(
-                                        contentPadding: EdgeInsets.all(16.0),
-                                        content: Expanded(
-                      child: Container(
-                        height: 250,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.cancel),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
-                            Icon(
-                              Icons.notification_important,
-                              size: 40,
-                              color: Colors.red,
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Donate Blood to Gain credits',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 8),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Text(
-                                    
-                                    'Reaction:',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(width: 4,),
-                                  if (_lastDonationDate == '') 
-                                  Expanded(child: Text('You have not perfomed any donation yet.'))
-                                  else
-                                  Text('Your blood was used to save a life.')
-                                ],
-                              ),
-                            ),
-                             Text('Thank you for choosing Us.') ,
-                             Row(
-                               children: [
-                                 Text('Type:',
-                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                                  SizedBox(width: 4,),
-                               
-                               Expanded(child: Text('voluntary, replacement or appeal.'))
-                               ],
-                             ),              
-                             Text('Elifesaver',
-                               style: TextStyle(fontWeight: FontWeight.bold),),       ],
-                                                  ),
-                      ),
-                                        ),
-                                            ));
-                                          },
-                                        ); // ...
-                              },
-                              child: Text(
-                                'Learn more',
-                                style: TextStyle(fontSize: 16.0, color: Colors.black),
-                              ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      ),
-    SizedBox(height: 30,),
-// ...
-
- Container(
-  height: 140,
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(8.0),
-    border: Border.all(color: Colors.red, width: 6.0),
-  ),
-  width: 350,
-  padding: const EdgeInsets.all(8.0),
-  child: Column(
-    children: [
-      Align(
-        alignment: Alignment.topLeft,
-        child: Text(
-          'Next Donation',
-          style: TextStyle(fontSize: 16.0, color: Colors.red),
-        ),
-      ),
-      SizedBox(height: 20),
-
-      Text(
-        _nextDonationDate.isNotEmpty ? _nextDonationDate : 'No Donation yet',
-        style: TextStyle(fontSize: 19.0),
-      ),
-      SizedBox(height: 5),
-      
-      Expanded(
-        child: Container(
-          width: 240,
-          padding: EdgeInsets.all(2),
-          decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: TextButton(
-          onPressed: () {
-           showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Center(
-                  child: AlertDialog(
-                    contentPadding: EdgeInsets.all(16.0),
-                    content: Expanded(
-                      child: Container(
-                        height: 220,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.cancel),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
-                            Icon(
-                              Icons.notification_important,
-                              size: 40,
-                              color: Colors.red,
-                            ),
-                            SizedBox(height: 16),
-                               if (widget.gender == 'male') 
-                                 Expanded(child: Text('After donating, you need to wait for up to 3 months before you can donate again. see you soon'),)
-                                 else
-                                 Expanded(child: Text('After donating, you need to wait for up to 4 months before you can donate again. see you soon')),
-                               SizedBox(height: 6,),
-                               Text('Elifesaver',
-                               style: TextStyle(fontWeight: FontWeight.bold),),               
-                                                ],
-                                                  ),
-                      ),
                     ),
-                                            ));
-                                          },
-                                        ); // ...
-          },
-          child: Text(
-            'Learn more',
-            style: TextStyle(fontSize: 16.0, color: Colors.black),
-          ),
-          ),
-        ),
-      ),
-    ],
-  ),
-),
-                      SizedBox(height: 30,),
-                      Container(
-                        height: 100,
-                        width: 350,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(color: Colors.red, width: 6.0),
-                        ),
-                        child: Center(
-                          child: TextButton(
-                            onPressed: (){
-                               Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ResultPage(btsNumber:widget.btsNumber)),
-            );
-                            },
-                            child: Text(
-                              'Results',
-                              style: TextStyle(fontSize: 19.0, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
+                ],
+              ),
+                     ),
+           ),
+                        SizedBox(height: 30,),
+                        Expanded(
+                          child: Container(
+                            height: 80,
+                            width: 350,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(color: Colors.red, width: 1.0),
+                            ),
+                            child: Center(
+                              child: TextButton(
+                                onPressed: (){
+                                   Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => ResultPage(btsNumber:widget.btsNumber)),
+                                      );
+                                },
+                                child: Text(
+                                  'Results',
+                                  style: TextStyle(fontSize: 19.0, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+          ),
         ),
               ),
             

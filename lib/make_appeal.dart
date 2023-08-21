@@ -156,15 +156,17 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                         ),
                       ],
                     ),
-                    height: 40,
+                    height: 60,
                     padding: EdgeInsets.all(8),
-                    child: Text(
-                      'Number of Bags',
+                    child: Center(
+                      child: Text(
+                        'Number of Bags',
+                      ),
                     ),
                   ),
                   SizedBox(width: 8,),
                   Container(
-                    height: 40,
+                    height: 60,
                     padding: EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -187,13 +189,13 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                           },
                           child: Text(
                             '-',
-                            style: TextStyle(fontSize: 30.0),
+                            style: TextStyle(fontSize: 50.0),
                           ),
                         ),
                         SizedBox(width: 16.0),
                         Text(
                           numberOfBags.toString(),
-                          style: TextStyle(fontSize: 16.0),
+                          style: TextStyle(fontSize: 30.0),
                         ),
                         SizedBox(width: 16.0),
                         InkWell(
@@ -204,7 +206,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                           },
                           child: Text(
                             '+',
-                            style: TextStyle(fontSize: 20.0),
+                            style: TextStyle(fontSize: 35.0),
                           ),
                         ),
                       ],
@@ -214,7 +216,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
               ),
               SizedBox(height: 16.0),
               Container(
-                height: 40,
+                height: 60,
                 decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -240,7 +242,8 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                     ),
                     SizedBox(height: 8),
                     Container(
-                      height: 40,
+                      
+                      height: 60,
                       decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -251,7 +254,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                         ),
                       ],
                     ),
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
+                      padding: EdgeInsets.only(left:12.0),
                       child: DropdownButton<String>(
                         value: selectedBloodGroup,
                         icon: Icon(Icons.arrow_drop_down),
@@ -277,7 +280,8 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
               SizedBox(height: 16.0),
               
               Container(
-                height: 40,
+                padding: EdgeInsets.only(left:10),
+                height: 60,
                 decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -290,7 +294,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                     ),
                   child:  _isLoading
                     ? SpinKitFadingCircle(
-        color: Colors.black, // Choose your desired color
+        color: Colors.red, // Choose your desired color
         size: 30.0, // Choose your desired size
       )
                 : DropdownButton<String>(
@@ -325,7 +329,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                     ),
                 child: TextField(
                   controller: medicalInformationController,
-                  maxLines: 3,
+                  maxLines: 1,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.all(12.0),

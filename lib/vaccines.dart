@@ -108,13 +108,19 @@ return Scaffold(
     ),
   ),
   body: Container(
+    padding: EdgeInsets.all(16),
     color: Colors.white,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-       SizedBox(height: 50,),
+       Text('Hep B', style:TextStyle(color:Colors.red)),
+       SizedBox(height: 16,),
         Container(
-          color: Colors.red,
+           decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(5),
+                      
+                    ),
           padding: const EdgeInsets.all(16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
