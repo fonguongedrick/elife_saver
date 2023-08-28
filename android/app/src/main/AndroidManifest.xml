@@ -1,10 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+   <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="E Life Saver"
         android:name="${applicationName}"
         android:icon="@mipmap/elife_saver">
         <activity
-            android:name=".MainActivity"
+            android:name="com.elifesaver.e_life_saver.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

@@ -313,7 +313,7 @@ const SizedBox(height: 30),
                           ),
                           SizedBox(height: 16.0),
                           Text(
-                            'Loading...',
+                            'Registering...',
                             style: TextStyle(fontSize: 16.0),
                           ),
                         ],

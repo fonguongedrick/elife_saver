@@ -114,10 +114,12 @@ class _NotificationPageState extends State<NotificationPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
               _bloodAppeals.isEmpty
-              ? SpinKitFadingCircle(
-        color: Colors.red, // Choose your desired color
-        size: 50.0, // Choose your desired size
-      )// Notification banner
+              ? Center(
+                child: SpinKitFadingCircle(
+                      color: Colors.red, // Choose your desired color
+                      size: 50.0, // Choose your desired size
+                    ),
+              )// Notification banner
          
                 
                 : SizedBox.shrink(),

@@ -382,7 +382,7 @@ class MySecondScreen extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 135),
-              Image.asset('assets/blood.png', height:250, width:250),
+              Image.asset('assets/Blood test-bro.png', height:250, width:250),
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(left: 40.0),

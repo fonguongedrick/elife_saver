@@ -195,7 +195,7 @@ class _MakeAppealPageState extends State<MakeAppealPage> {
                         SizedBox(width: 16.0),
                         Text(
                           numberOfBags.toString(),
-                          style: TextStyle(fontSize: 30.0),
+                          style: TextStyle(fontSize: 16.0),
                         ),
                         SizedBox(width: 16.0),
                         InkWell(

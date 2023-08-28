@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'notification.dart';
 import 'donor_info.dart';
 import 'login.dart';
+import 'patient_notification.dart';
 import 'make_appeal.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -219,7 +220,16 @@ class _PatientDashboardState extends State<PatientDashboard> {
                   ],
                 ),
                 onTap: () {
-                 
+                 Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PatientNotification(
+            userId: widget.userId,
+            userName: widget.userName,
+            userType: widget.userType,
+          ),
+        ),
+      );
                 },
               ),
               ListTile(
@@ -310,9 +320,7 @@ class _PatientDashboardState extends State<PatientDashboard> {
                         children: [
                           Text(
                             'Hi',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            
                           ),
                           SizedBox(width: 5,),
                           Text('${widget.userName}!',

@@ -1,4 +1,4 @@
-package com.example.e_life_saver
+package com.elifesaver.e_life_saver
 
 import io.flutter.embedding.android.FlutterActivity
 

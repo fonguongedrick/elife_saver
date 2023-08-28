@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dashboard.dart';
+import 'login.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -221,10 +222,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text('Donor Information', style: TextStyle(color: Colors.black)),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+        
         elevation: 0,
       ),
       body: Container(
@@ -559,15 +557,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
               ),
               SizedBox(height: 30,),
                 Container(
-                  child: _isLoading
-        ? Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 0.5,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-              value: 50,
-            ),
-          )
-        : Container(
+                  child:  Container(
             width: 350,
             decoration: BoxDecoration(
               color: Colors.red,
@@ -591,7 +581,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                             ),
                             SizedBox(height: 16.0),
                             Text(
-                              'Loading...',
+                              'Registering...',
                               style: TextStyle(fontSize: 16.0),
                             ),
                           ],

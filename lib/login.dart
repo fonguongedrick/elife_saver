@@ -269,10 +269,10 @@ class _LoginPageState extends State<LoginPage> {
                     padding: EdgeInsets.only(left: 150),
                     child: GestureDetector(
                       onTap: () {
-                              Navigator.push(
+                             /* Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => DoctorScanPage()),
-                              );
+                              );*/
                             },
                       child: Text(
                         'Forgot your password?',
