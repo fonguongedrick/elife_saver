@@ -108,7 +108,7 @@ final jsonData = json.decode(response.body);
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(6.0),
+        padding: const EdgeInsets.all(16.0),
         child: Container(
           child: Stack(
             children: [

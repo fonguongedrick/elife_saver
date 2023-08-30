@@ -37,13 +37,14 @@ class _LoginPageState extends State<LoginPage> {
     },
   );
 
-  setState(() {
-    _isLoading = false;
-    _showLoadingDialog = false; // Hide progress indicator
-  });
+  
 
   final jsonData = jsonDecode(response.body);
   if (jsonData['success'] == true) {
+    setState(() {
+    _isLoading = false;
+    _showLoadingDialog = false; // Hide progress indicator
+  });
     final userType = jsonData['type'];
     final user = jsonData['user'];
     final userName = user[userType + '_name'];
@@ -161,225 +162,230 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              SizedBox(height: 45,),
-              Center(
-              child: GestureDetector(
-                 onTap: () {
-                        
-                      },
-                child: Image.asset(
-                  'assets/e_life_saver.png',
-                  height: 120.0,
-                 
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(height: 75,),
+                Center(
+                child: GestureDetector(
+                   onTap: () {
+                          
+                        },
+                  child: Image.asset(
+                    'assets/e_life_saver.png',
+                    height: 120.0,
+                   
+                  ),
                 ),
               ),
-            ),
-              Row(
-                children: [
-                  
-            SizedBox(height: 8,),
-                  Text(
-                    'Login',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
+                Row(
+                  children: [
+                    
+              SizedBox(height: 8,),
+                    Text(
+                      'Login',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ]
-              ),
-              Row(
-                children: [
-                  Text(
-                    'Welcome back, login to continue',
-                    textAlign: TextAlign.left,
-                  ),
-                ]
-              ),
-              SizedBox(height: 20,),
-              Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(left: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: 10,
-                        ),
-                      ],
+                  ]
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Welcome back, login to continue',
+                      textAlign: TextAlign.left,
                     ),
-                    child: SingleChildScrollView(
-                      child: TextField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
+                  ]
+                ),
+                SizedBox(height: 20,),
+                Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(left: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: SingleChildScrollView(
+                        child: TextField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Email',
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 30,),
-                  Container(
-                    padding: EdgeInsets.only(left: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: TextField(
-                              controller: _passwordController,
-                              obscureText: _obscureText,
-                              decoration: InputDecoration(
-                                hintText: 'Password',
+                    SizedBox(height: 30,),
+                    Container(
+                      padding: EdgeInsets.only(left: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: TextField(
+                                cursorColor: Colors.white,
+                                controller: _passwordController,
+                                obscureText: _obscureText,
+                                decoration: InputDecoration(
+                                 border: InputBorder.none,
+                                  hintText: 'Password',
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                          icon: Icon(
-                            _obscureText ? Icons.visibility_off : Icons.visibility,
-                            color: Colors.red,
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                            icon: Icon(
+                              _obscureText ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.red,
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 150),
+                      child: GestureDetector(
+                        onTap: () {
+                               /* Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => DoctorScanPage()),
+                                );*/
+                              },
+                        child: Text(
+                          'Forgot your password?',
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30,),
+                    Container(
+            child: Container(
+            width: 350,
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false, // Prevent dialog dismissal on tap outside
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      child: Container(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SpinKitCircle(
+                              color: Colors.red,
+                              size: 50.0,
+                            ),
+                            SizedBox(height: 16.0),
+                            Text(
+                              'Logging in...',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+                /* Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Dashboard()),
+                ); */
+                _authenticate(
+                  _emailController.text,
+                  _passwordController.text,
+                );
+              },
+              child: Text(
+                'Login',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+                  ),
+          ),
+            SizedBox(
+                      height: 140,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Don\'t have an account?',
+                        ),
+                        SizedBox(width: 0.1,),
+                
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => PatientRegisterPage()),
+                                );
+                              },
+                              child: Text(
+                                'Request for blood',
+                                style: TextStyle(color:Colors.red),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                  // After successful login, navigate to the DonorDashboard and pass the userId and userType
+                  Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                  builder: (context) => DonorInfoPage(),
+            ),
+                  );
+                
+                              },
+                              child: Text(
+                                'Become a donor',
+                                style: TextStyle(color:Colors.red),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 150),
-                    child: GestureDetector(
-                      onTap: () {
-                             /* Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => DoctorScanPage()),
-                              );*/
-                            },
-                      child: Text(
-                        'Forgot your password?',
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 30,),
-                  Container(
-  child: Container(
-          width: 350,
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: TextButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                barrierDismissible: false, // Prevent dialog dismissal on tap outside
-                builder: (BuildContext context) {
-                  return Dialog(
-                    child: Container(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SpinKitCircle(
-                            color: Colors.red,
-                            size: 50.0,
-                          ),
-                          SizedBox(height: 16.0),
-                          Text(
-                            'Logging in...',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-              /* Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
-              ); */
-              _authenticate(
-                _emailController.text,
-                _passwordController.text,
-              );
-            },
-            child: Text(
-              'Login',
-              style: TextStyle(color: Colors.white),
+                  ],
+                ),
+              ],
             ),
-          ),
-        ),
-),
-          SizedBox(
-                    height: 140,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Don\'t have an account?',
-                      ),
-                      SizedBox(width: 0.1,),
-      
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => PatientRegisterPage()),
-                              );
-                            },
-                            child: Text(
-                              'request for blood',
-                              style: TextStyle(color:Colors.red),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-        // After successful login, navigate to the DonorDashboard and pass the userId and userType
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-        builder: (context) => DonorInfoPage(),
-          ),
-        );
-      
-                            },
-                            child: Text(
-                              'become a donor',
-                              style: TextStyle(color:Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
           ),
         ),
       ),

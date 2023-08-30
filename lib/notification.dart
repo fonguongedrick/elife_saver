@@ -152,17 +152,17 @@ class _NotificationPageState extends State<NotificationPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left:100.0),
+                    padding: const EdgeInsets.only(left: 100.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Align(
                           alignment: Alignment.topCenter,
                           child: Icon(
-                                            Icons.notification_important,
-                                            size: 40,
-                                            color: Colors.red,
-                                          ),
+                            Icons.notification_important,
+                            size: 40,
+                            color: Colors.red,
+                          ),
                         ),
                         SizedBox(width: 16,),
                         IconButton(
@@ -171,25 +171,21 @@ class _NotificationPageState extends State<NotificationPage> {
                             Navigator.pop(context);
                           },
                         ),
-                     
                       ],
                     ),
                   ),
-                  
                   SizedBox(height: 46),
                   Row(
                     children: [
                       Expanded(
                         child: Text(
                           '$numberOfBags bags of $bloodGroup needed at $healthFacility',
-                          
                         ),
                       ),
                       SizedBox(width: 46),
                       Expanded(
                         child: Text(
                           '${creationDate.day}/${creationDate.month}/${creationDate.year} ${creationDate.hour}:${creationDate.minute} status: $status',
-                         
                         ),
                       ),
                     ],
@@ -212,12 +208,12 @@ class _NotificationPageState extends State<NotificationPage> {
                         ),
                         child: TextButton(
                           onPressed: () {},
-                          child: Expanded(child: Text('Donate Blood', style: TextStyle(color: Colors.white),)),
+                          child: Text('Donate Blood', style: TextStyle(color: Colors.white)),
                         ),
                       ),
                       SizedBox(width: 8),
                       Container(
-                        width:100,
+                        width: 100,
                         height: 35,
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -226,7 +222,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         ),
                         child: TextButton(
                           onPressed: () {},
-                          child: Text('Donate xaf',  style: TextStyle(color: Colors.white),),
+                          child: Text('Donate xaf', style: TextStyle(color: Colors.white)),
                         ),
                       ),
                     ],
@@ -238,6 +234,7 @@ class _NotificationPageState extends State<NotificationPage> {
         },
       );
     },
+  
     child: Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -249,7 +246,7 @@ class _NotificationPageState extends State<NotificationPage> {
           SizedBox(height: 8),
           Expanded(
             child: Text(
-              '$numberOfBags bags of $bloodGroup needed at $healthFacility',
+              '$numberOfBags bags of $bloodGroup needed...',
               
             ),
           ),

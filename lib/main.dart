@@ -207,7 +207,6 @@ class _My extends State<My> {
               },
               children: [
                 FirstScreen(pageController: _pageController),
-                MyFirstScreen(pageController: _pageController),
                 MySecondScreen(pageController: _pageController),
               ],
             ),
@@ -216,7 +215,7 @@ class _My extends State<My> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: PageIndicator(
-                  totalDots: 3,
+                  totalDots: 2,
                   currentPage: _currentPage,
                 ),
               ),
@@ -283,91 +282,48 @@ class FirstScreen extends StatelessWidget {
           ),
           SizedBox(height: 100),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+           // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/e_life_saver.png', height:250, width:250,),
+              Center(child: Image.asset('assets/e_life_saver.png', height:192, width:172,)),
               Text(
                 'WELCOME',
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24),
+              ),
+              SizedBox(height: 16,),
+               Text(
+                'Your blood donor finder',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 125,),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right:18.0),
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Colors.red,
+                    child: IconButton(onPressed: () {
+                      pageController.nextPage(
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                          );
+                    }, icon: Icon(Icons.arrow_forward, color: Colors.white,),) ,
+                  ),
+                ),
               ),
               SizedBox(height: 80),
             ],
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.arrow_forward),
-        backgroundColor: Colors.red,
-        onPressed: () {
-          // Go to the next screen.
-          // Update profile data here
-          pageController.nextPage(
-            duration: Duration(milliseconds: 500),
-            curve: Curves.ease,
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+     
     );
   }
 }
 
-class MyFirstScreen extends StatelessWidget {
-  final PageController pageController;
 
-  MyFirstScreen({required this.pageController});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 60),
-          Align(
-            alignment: Alignment.topRight,
-            child: TextButton(
-              onPressed: () {
-                // Go to the login page.
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              },
-              child: Text(
-                'Skip',
-                style: TextStyle(color: Colors.red, ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 110,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/blood_test.png', height:250, width:250,),
-              SizedBox(height:2,),
-              Text(
-                'Where Donors and Patients meet',
-                style: TextStyle(fontSize: 15),
-              ),
-            ],
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.arrow_forward),
-        backgroundColor: Colors.red,
-        onPressed: () {
-          // Go to the next screen.
-          pageController.nextPage(
-            duration: Duration(milliseconds: 500),
-            curve: Curves.ease,
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );}}
 class MySecondScreen extends StatelessWidget {
   final PageController pageController;
 
@@ -382,14 +338,12 @@ class MySecondScreen extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 135),
-              Image.asset('assets/Blood test-bro.png', height:250, width:250),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(left: 40.0),
-                child: Text(
-                  'Find a compatible blood donor anytime, anywhere with ease',
-                  style: TextStyle(fontSize: 15),
-                ),
+              Image.asset('assets/blood_test.png', height:250, width:250),
+              SizedBox(height: 10),
+              Text(
+                'Find a compatible blood donor anytime, anywhere with ease',
+                style: TextStyle(fontSize: 15),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 150),
               Align(

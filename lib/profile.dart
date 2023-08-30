@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ProfilePage extends StatefulWidget {
   final int userId;
@@ -30,46 +29,33 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController _nameController;
-late TextEditingController _phoneController;
-late TextEditingController _emailController;
-late TextEditingController _cityController;
-late TextEditingController _addressController;
-late TextEditingController _passwordController;
-late TextEditingController _oldPasswordController; 
-   late String correctOldPassword; 
- String selectedHospital = ''; // Define selectedHospital variable
-  List<String> cityNames = [];
-   // Define correctOldPassword variable
+  late TextEditingController _phoneController;
+  late TextEditingController _emailController;
+  late TextEditingController _cityController;
+  late TextEditingController _addressController;
+  late TextEditingController _passwordController;
+
   @override
   void initState() {
     super.initState();
-    correctOldPassword = widget.password;
-  _nameController = TextEditingController(text: widget.userName);
-  _phoneController = TextEditingController(text: widget.phoneNumber);
-  _emailController = TextEditingController(text: widget.email);
-  _cityController = TextEditingController(text: widget.city);
-  _addressController = TextEditingController(text: widget.address);
-  _passwordController = TextEditingController();
-  _oldPasswordController = TextEditingController(); 
-   _fetchResults();
-   _fetchResults().then((_) {
-      setState(() {
-        selectedHospital = cityNames.isNotEmpty ? cityNames[0] : '';
-      });
-    }); // Initialize the old password controller
-}
+    _nameController = TextEditingController(text: widget.userName);
+    _phoneController = TextEditingController(text: widget.phoneNumber);
+    _emailController = TextEditingController(text: widget.email);
+    _cityController = TextEditingController(text: widget.city);
+    _addressController = TextEditingController(text: widget.address);
+    _passwordController = TextEditingController();
+  }
 
-@override
-void dispose() {
-  _nameController.dispose();
-  _phoneController.dispose();
-  _emailController.dispose();
-  _cityController.dispose();
-  _addressController.dispose();
-  _passwordController.dispose();
-  _oldPasswordController.dispose(); // Dispose the old password controller
-  super.dispose();
-}
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _cityController.dispose();
+    _addressController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(ProfilePage oldWidget) {
@@ -101,88 +87,61 @@ void dispose() {
       initials += part[0].toUpperCase();
     }
   }
-print(widget.password);
-  
+
   return initials;
 }
-
   void _handleUpdateProfile(List<String>? fieldsToUpdate) async {
     final updatedName = _nameController.text;
     final updatedPhoneNumber = _phoneController.text;
     final updatedCity = _cityController.text;
     final updatedAddress = _addressController.text;
     final updatedPassword =
-      _passwordController.text.isNotEmpty ? _passwordController.text : '';
-  final correctOldPassword = widget.password; 
+        _passwordController.text.isNotEmpty ? _passwordController.text : '';
+
     const apiUrl = 'https://elifesaver.online/donor/includes/update_donor.inc.php';
 
     try {
       final Map<String, String> updatedFields = {};
 
       // Compare with the original values to determine which fields have been updated
-       if (updatedName.isNotEmpty) {
-      updatedFields['name'] = updatedName;
-      _nameController.text = updatedName; // Update the text field
-    }
-    if (updatedPhoneNumber.isNotEmpty) {
-      updatedFields['phone'] = updatedPhoneNumber;
-      _phoneController.text = updatedPhoneNumber; // Update the text field
-    }
-    if (updatedCity.isNotEmpty) {
-      updatedFields['city'] = updatedCity;
-      selectedHospital = updatedCity; // Update the text field
-    }
-    if (updatedAddress.isNotEmpty) {
-      updatedFields['address'] = updatedAddress;
-      _addressController.text = updatedAddress; // Update the text field
-    }
-    if (updatedPassword.isNotEmpty && _oldPasswordController.text == correctOldPassword) {
-      updatedFields['password'] = updatedPassword;
-      _passwordController.text = ''; // Clear the password field
-    }
+      if (fieldsToUpdate == null || fieldsToUpdate.contains('name')) {
+        updatedFields['name'] = updatedName;
+      }
+      if (fieldsToUpdate == null || fieldsToUpdate.contains('phone')) {
+        updatedFields['phone'] = updatedPhoneNumber;
+      }
+      if (fieldsToUpdate == null || fieldsToUpdate.contains('city')) {
+        updatedFields['city'] = updatedCity;
+      }
+      if (fieldsToUpdate == null || fieldsToUpdate.contains('address')) {
+        updatedFields['address'] = updatedAddress;
+      }
+      if (fieldsToUpdate == null ||
+          (fieldsToUpdate.contains('password') && updatedPassword.isNotEmpty)) {
+        updatedFields['password'] = updatedPassword;
+      }
 
-    if (updatedFields.isEmpty) {
-      // No fields have been updated, show a message to the user.
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('No Changes'),
-            content: Text('No fields have been updated.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // Close the dialog
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-      return;
-    }
-       if (_oldPasswordController.text != widget.password) {
-      // Incorrect old password, show an error message to the user.
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Incorrect Old Password'),
-            content: Text('Please enter the correct old password.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // Close the dialog
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-      return;
-    }
+      if (updatedFields.isEmpty) {
+        // No fields have been updated, show a message to the user.
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('No Changes'),
+              content: Text('No fields have been updated.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
 
       // Send only the updated fields in the API call
       final response = await http.post(
@@ -199,7 +158,6 @@ print(widget.password);
         // Handle null response from the server.
         print('Server returned null data');
         print(jsonData);
-        if(jsonData['success'] == true) 
         return;
       }
 
@@ -270,40 +228,7 @@ print(widget.password);
   void _updateAllFields() {
     _handleUpdateProfile(null);
   }
-   bool _isLoading = false; 
 
-  Future<void> _fetchResults() async {
-    setState(() {
-      _isLoading = true; 
-      // Hide progress indicator
-    });
-     try {
-      
-      // Check if btsNumber is null and provide a default value (an empty string)
-      final url = Uri.parse('https://elifesaver.online/includes/get_all_cities.inc.php');
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      );
-         setState(() {
-      _isLoading = false; 
-      // Hide progress indicator
-    });
-        final jsonData = json.decode(response.body);
-        print(jsonData['success']);
-        print(jsonData);
-        if (jsonData['success'] == true) {
-          final List<dynamic> facilities = jsonData['cities'];
-          setState(() {
-            cityNames = facilities.map((facility) => facility['city_name'] as String).toList();
-          });
-        }
-     }catch (error) {
-      print('Error during API call: $error');
-    }
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -331,30 +256,22 @@ print(widget.password);
                     Padding(
                       padding: const EdgeInsets.only(left: 20.0),
                       child: Container(
-                        
-  decoration: BoxDecoration(
-    shape: BoxShape.circle,
-    border: Border.all(
-      color: Colors.black,
-      width: 2.0,
-    ),
-  ),
-  child: CircleAvatar(
-    radius: 36,
-    backgroundColor: Colors.white,
-    child: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        getInitials(widget.userName),
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
-  ),
-),
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child:CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.white,
+                                    child: Text(
+                                      getInitials(widget.userName),
+                                      style: TextStyle(color: Colors.black, fontSize:24, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                      ),
                     ),
                     SizedBox(width: 56),
                     Expanded(
@@ -381,7 +298,7 @@ print(widget.password);
             ),
             SizedBox(height: 16),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -457,32 +374,18 @@ print(widget.password);
                   ),
                   SizedBox(height: 8),
                   Container(
-                    width: 340,
-                    padding: EdgeInsets.only(left:4),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.grey),
                     ),
-                    child:  _isLoading
-                    ? SpinKitFadingCircle(
-        color: Colors.black, // Choose your desired color
-        size: 30.0, // Choose your desired size
-      )
-                : DropdownButton<String>(
-        value: selectedHospital,
-        hint: Text('Select a hospital'),
-        onChanged: (String? value) {
-          setState(() {
-            selectedHospital = value!;
-          });
-        },
-        items: cityNames.map((name) {
-          return DropdownMenuItem<String>(
-            value: name,
-            child: Text(name),
-          );
-        }).toList(),
-      ),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(16),
+                        border: InputBorder.none,
+                        hintText: widget.city,
+                      ),
+                      controller: _cityController,
+                    ),
                   ),
                   SizedBox(height: 16),
                   const Text(
@@ -515,36 +418,19 @@ print(widget.password);
                   ),
                   SizedBox(height: 8),
                   Container(
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(10),
-    border: Border.all(color: Colors.grey),
-  ),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      TextField(
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(16),
-          border: InputBorder.none,
-          hintText: 'Old Password',
-        ),
-        obscureText: true,
-        controller: _oldPasswordController,
-      ),
-      Divider(), // Add a divider for visual separation
-      TextField(
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(16),
-          border: InputBorder.none,
-          hintText: 'New Password',
-        ),
-        obscureText: true,
-        controller: _passwordController,
-        enabled: _oldPasswordController.text == widget.password,
-      ),
-    ],
-  ),
-),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(16),
+                        border: InputBorder.none,
+                        hintText: 'Enter new password',
+                      ),
+                      controller: _passwordController,
+                    ),
+                  ),
                   SizedBox(height: 32),
                   Container(
                     width: 360,

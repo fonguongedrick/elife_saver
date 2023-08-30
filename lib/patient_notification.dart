@@ -132,20 +132,22 @@ class _PatientNotificationState extends State<PatientNotification> {
                     ? SpinKitFadingCircle(
             color: Colors.red, // Choose your desired color
             size: 30.0, // Choose your desired size
-          )  : Container(
-                width: 350,
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.red[200],
-                    ),
-                    child: Text(
-                      'No Blood Appeal',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+          )  : Center(
+            child: Container(
+                  width: 350,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.red[200],
+                      ),
+                      child: Text(
+                        'No Blood Appeal',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
+          ),
                     
               ],
             )

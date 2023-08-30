@@ -111,9 +111,9 @@ return Scaffold(
     padding: EdgeInsets.all(16),
     color: Colors.white,
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-       Text('Hep B', style:TextStyle(color:Colors.red)),
+       Text('Hep B', style:TextStyle(color:Colors.red),
+       textAlign: TextAlign.center,),
        SizedBox(height: 16,),
         Container(
            decoration: BoxDecoration(

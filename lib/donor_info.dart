@@ -226,7 +226,6 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
         elevation: 0,
       ),
       body: Container(
-        color: Colors.white,
         child: Padding(
           padding: EdgeInsets.all(16),
           child: SingleChildScrollView(
@@ -242,16 +241,16 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                 ),
                 SizedBox(height: 16),
                 Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
                   child: TextField(
                     controller: nameController,
                     decoration: InputDecoration(
@@ -297,6 +296,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
                         blurRadius: 10,
+                        spreadRadius: 2
                       ),
                     ],
                   ),
@@ -314,7 +314,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                 SizedBox(height: 30),
                 Container(
                   padding: EdgeInsets.only(left:12),
-                  width:325,
+                  //width:350,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -330,9 +330,16 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
           color: Colors.red, // Choose your desired color
           size: 30.0, // Choose your desired size
         )
-                  : DropdownButton<String>(
+                  : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DropdownButton<String>(
           value: selectedHospital,
           hint: Text('Select a city'),
+          underline: Container(
+            height: 2,
+            color: Colors.white,
+          ),
           onChanged: (String? value) {
             setState(() {
               cityValue = value!;
@@ -344,7 +351,10 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
               child: Text(name),
             );
           }).toList(),
-        ),),
+        ),
+           Text('')
+                    ],
+                  ),),
                 // Address TextField
                 SizedBox(height: 30),
                 Container(
@@ -436,7 +446,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                 ),
                 SizedBox(height: 30),
                 Container(
-                  width: 350,
+                  //width: 350,
                   padding: EdgeInsets.only(left:12),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -482,6 +492,7 @@ class _DonorInfoPageState extends State<DonorInfoPage> {
                           );
                         }).toList(),
                       ),
+                      Text('')
                     ],
                   ),
                 ),
